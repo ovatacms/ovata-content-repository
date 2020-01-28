@@ -1,0 +1,66 @@
+-   relpath: newsapp
+    type: "ovata:app"
+    workspace: www.bluesky-it.ch
+    root: /news
+    icon: ADDRESS_CARD_O
+    width: 150px
+    title: News
+    class: ch.ovata.cms.admin.app.ContentApp
+    children:
+        -   relpath: browser
+            children:
+                -   relpath: views
+                    children:
+                        -   relpath: table
+                            children:
+                                -   relpath: columns
+                                    children:
+                                        -   relpath: timestamp
+                                            order: 1
+                                            title: Date
+                                        -   relpath: author
+                                            order: 2
+                                            title: Author
+                                        -   relpath: title
+                                            order: 3
+                                            title: Title
+                -   relpath: form
+                    name: Newsitem
+                    type: "ovata:form"
+                    children:
+                        -   relpath: tabs
+                            children:
+                            -   relpath: tab1
+                                label: Newsitem
+                                order: 1
+                                children:
+                                    -   relpath: timestamp
+                                        control: datetime
+                                        label: Created at
+                                        order: 0
+                                    -   relpath: author
+                                        control: text
+                                        label: Author
+                                        order: 1
+                                    -   relpath: title
+                                        control: text
+                                        label: Title
+                                        order: 2
+                                    -   relpath: abstract
+                                        control: richtext
+                                        label: Description
+                                        order: 3
+                                    -   relpath: text
+                                        control: richtext
+                                        label: Content
+                                        order: 4
+                        -   relpath: actions
+                            children:
+                                -   relpath: ok
+                                    class: ch.ovata.cms.admin.app.FormOkCommand
+                                    label: Ok
+                                    order: 0
+                                -   relpath: cancel
+                                    class: ch.ovata.cms.admin.app.FormCancelCommand
+                                    label: Cancel
+                                    order: 1

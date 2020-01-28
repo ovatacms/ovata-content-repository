@@ -1,0 +1,87 @@
+-   relpath: dam
+    type: "ovata:app"
+    workspace: dam
+    root: /assets
+    icon: PICTURE_O
+    title: Digital Asset Management
+    class: ch.ovata.cms.admin.app.ContentApp
+    children:
+        -   relpath: browser
+            children:
+                -   relpath: views
+                    children:
+                        -   relpath: treetable
+                            children:
+                                -   relpath: columns
+                                    children:
+                                        -   relpath: "@NodeName"
+                                            order: 0
+                                            title: Name
+                                        -   relpath: "assetname"
+                                            order: 1
+                                            title: Name of the Asset
+                                -   relpath: actions
+                                    children:
+                                        -   relpath: addFolderCommand
+                                            class: ch.ovata.cms.admin.app.AddNodeCommand
+                                            nodeType: "ovata:folder"
+                                            nodePrefix: Folder
+                                            label: AddFolder
+                                            icon: PLUS
+                                            order: 0
+                                        -   relpath: addNodeCommand
+                                            class: ch.ovata.cms.admin.app.NewNodeCommand
+                                            label: Add Asset
+                                            nodeType: "ovata:resource"
+                                            icon: PLUS
+                                            order: 1
+                                        -   relpath: editNodeCommand
+                                            class: ch.ovata.cms.admin.app.EditNodeCommand
+                                            label: Edit Asset
+                                            icon: PENCIL
+                                            order: 2
+                                        -   relpath: deleteNodeCommand
+                                            class: ch.ovata.cms.admin.app.DeleteNodeCommand
+                                            label: Remove Item
+                                            icon: MINUS
+                                            order: 3
+                -   relpath: form
+                    name: Asset
+                    type: "ovata:form"
+                    children:
+                        -   relpath: tabs
+                            children:
+                            -   relpath: tab1
+                                label: This is tab 1
+                                order: 1
+                                children:
+                                    -   relpath: content
+                                        control: binary
+                                        label: Image
+                                        order: 0
+                                    -   relpath: assetname
+                                        control: text
+                                        label: Asset Name
+                                        order: 1
+                                    -   relpath: legend
+                                        control: text
+                                        label: Legend
+                                        order: 2
+                                    -   relpath: title
+                                        control: text
+                                        label: Title
+                                        order: 3
+                                    -   relpath: subject
+                                        control: text
+                                        label: Subject
+                                        order: 4
+                        -   relpath: actions
+                            children:
+                                -   relpath: ok
+                                    class: ch.ovata.cms.admin.app.FormOkCommand
+                                    label: Ok
+                                    order: 0
+                                -   relpath: cancel
+                                    class: ch.ovata.cms.admin.app.FormCancelCommand
+                                    label: Cancel
+                                    order: 1

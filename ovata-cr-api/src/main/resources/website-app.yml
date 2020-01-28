@@ -1,0 +1,83 @@
+-   relpath: website
+    type: "ovata:app"
+    workspace: WCMS
+    root: /
+    icon: GLOBE
+    title: Website
+    class: ch.ovata.cms.admin.app.ContentApp
+    children:
+        -   relpath: browser
+            children:
+                -   relpath: views
+                    children:
+                        -   relpath: treetable
+                            children:
+                                -   relpath: columns
+                                    children:
+                                        -   relpath: "@NodeName"
+                                            order: 0
+                                            width: 0.3
+                                        -   relpath: "@NodeType"
+                                            order: 1
+                                            width: 0.2
+                                        -   relpath: title
+                                            order: 2
+                                            width: 0.5
+                                -   relpath: actions
+                                    children:
+                                        -   relpath: addFolderCommand
+                                            enabledNodeType: "ovata:folder"
+                                            class: ch.ovata.cms.admin.app.AddNodeCommand
+                                            nodeType: "ovata:folder"
+                                            nodePrefix: "Folder"
+                                            label: Add Folder
+                                            icon: PLUS
+                                            order: 0
+                                        -   relpath: addPageCommand
+                                            class: ch.ovata.cms.admin.app.AddPageCommand
+                                            label: Add Page
+                                            icon: PLUS
+                                            nodeType: "ovata:wcms:page"
+                                            nodePrefix: "Page"
+                                            order: 1
+                                        -   relpath: editNodeCommand$
+                                            enabledNodeType: "ovata:wcms:page"
+                                            class: ch.ovata.cms.admin.app.EditNodeCommand
+                                            label: Edit Page Properties
+                                            icon: PENCIL
+                                            order: 2
+                                        -   relpath: editPageCommand
+                                            enabledNodeType: "ovata:wcms:page"
+                                            class: ch.ovata.cms.admin.app.EditPageCommand
+                                            label: Edit Page
+                                            icon: PENCIL
+                                            order: 3
+                                        -   relpath: deleteNodeCommand
+                                            class: ch.ovata.cms.admin.app.DeleteNodeCommand
+                                            label: Remove Item
+                                            icon: MINUS
+                                            order: 4
+                -   relpath: form
+                    name: Asset
+                    type: "ovata:form"
+                    children:
+                        -   relpath: tabs
+                            children:
+                            -   relpath: tab1
+                                label: Page Properties
+                                order: 1
+                                children:
+                                    -   relpath: title
+                                        control: text
+                                        label: Page Title
+                                        order: 0
+                        -   relpath: actions
+                            children:
+                                -   relpath: ok
+                                    class: ch.ovata.cms.admin.app.FormOkCommand
+                                    label: Ok
+                                    order: 0
+                                -   relpath: cancel
+                                    class: ch.ovata.cms.admin.app.FormCancelCommand
+                                    label: Cancel
+                                    order: 1

@@ -1,0 +1,43 @@
+{
+    "@type" : "ovata:unstructured",
+    
+    "properties" : {
+        "test1" : {
+            "type" : "STRING",
+            "value" : "This is a test."
+        }
+    },
+    
+    "nodes" : {
+        "testnode" : {
+            "@type" : "ovata:unstructured",
+            
+            "properties" : {
+                "test2" : {
+                    "type" : "LONG",
+                    "value" : 123423
+                },
+                "test3" : {
+                    "type" : "ARRAY",
+                    "value" : [ {
+                            "type" : "STRING",
+                            "value" : "test"
+                    }]
+                },
+                "test4" : {
+                    "type" : "MAP",
+                    "value" : {
+                        "a1" : {
+                            "type" : "STRING",
+                            "value" : "testmamp"
+                        }
+                    }
+                }
+            },
+            
+            "nodes" : {
+                
+            }
+        }
+    }
+}

@@ -1,0 +1,75 @@
+-   relpath: addresses
+    type: "ovata:app"
+    workspace: addresses
+    root: /persons
+    children:
+        -   relpath: browser
+            children:
+                -   relpath: views
+                    children:
+                        -   relpath: table
+                            children:
+                                -   relpath: columns
+                                    children:
+                                        -   relpath: title
+                                            order: 1
+                                        -   relpath: firstname
+                                            order: 2
+                                        -   relpath: lastname
+                                            order: 3
+                                        -   relpath: street
+                                            order: 4
+                                        -   relpath: zip
+                                            order: 5
+                                        -   relpath: city
+                                            order: 6
+                -   relpath: form
+                    name: Person
+                    type: "ovata:form"
+                    children:
+                        -   relpath: tabs
+                            children:
+                            -   relpath: tab1
+                                label: This is tab 1
+                                order: 1
+                                children:
+                                    -   relpath: title
+                                        type: string
+                                        label: Title
+                                        order: 0
+                                    -   relpath: firstname
+                                        type: string
+                                        label: Firstname
+                                        order: 1
+                                    -   relpath: lastname
+                                        type: string
+                                        label: Lastname
+                                        order: 2
+                                    -   relpath: description
+                                        type: richtext
+                                        label: Description
+                                        order: 3
+                            -   relpath: tab2
+                                label: This is tab 2
+                                order: 2
+                                children:
+                                    -   relpath: street
+                                        type: string
+                                        label: Street
+                                        order: 1
+                                    -   relpath: zip
+                                        type: string
+                                        label: Zip
+                                        order: 2
+                                    -   relpath: city
+                                        type: string
+                                        label: City
+                                        order: 3
+                        -   relpath: actions
+                            children:
+                                -   relpath: ok
+                                    class: ch.ovata.cms.admin.action.OkAction
+                                    label: Ok
+                                -   relpath: cancel
+                                    class: ch.ovata.cms.admin.action.CancelAction
+                                    label: Cancel

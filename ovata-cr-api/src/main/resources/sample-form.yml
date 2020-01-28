@@ -1,0 +1,41 @@
+-   relpath: form
+    name: Asset
+    type: "ovata:form"
+    children:
+        -   relpath: tabs
+            children:
+            -   relpath: tab1
+                label: This is tab 1
+                order: 1
+                children:
+                    -   relpath: resource
+                        control: binary
+                        label: Image
+                        order: 0
+                    -   relpath: assetname
+                        control: text
+                        label: Asset Name
+                        order: 1
+                    -   relpath: legend
+                        control: text
+                        label: Legend
+                        order: 2
+                    -   relpath: title
+                        control: text
+                        label: Title
+                        order: 3
+                    -   relpath: subject
+                        control: text
+                        label: Subject
+                        order: 4
+        -   relpath: actions
+            children:
+                -   relpath: ok
+                    class: ch.ovata.cms.admin.app.FormOkCommand
+                    label: Ok
+                    order: 0
+                -   relpath: cancel
+                    class: ch.ovata.cms.admin.app.FormCancelCommand
+                    label: Cancel
+                    order: 1
+
