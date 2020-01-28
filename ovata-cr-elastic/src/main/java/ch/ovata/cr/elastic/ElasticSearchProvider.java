@@ -55,7 +55,7 @@ public class ElasticSearchProvider implements SearchProvider {
     
     protected final RestHighLevelClient client;
     protected final String repositoryName;
-    private final FulltextIndexer indexer;
+    protected final FulltextIndexer indexer;
     
     public ElasticSearchProvider( RestHighLevelClient client, String repositoryName, FulltextIndexer indexer) {
         this.client = client;

@@ -34,8 +34,8 @@ import org.elasticsearch.client.RestHighLevelClient;
  */
 public class ElasticSearchProviderFactory implements SearchProviderFactory {
 
-    private final RestHighLevelClient client;
-    private final FulltextIndexer indexer;
+    protected final RestHighLevelClient client;
+    protected final FulltextIndexer indexer;
     
     public ElasticSearchProviderFactory( BlobStoreFactory blobStoreFactory, String host, String uidpwd) {
         String token = Base64.getEncoder().encodeToString( uidpwd.getBytes( StandardCharsets.UTF_8));
