@@ -202,7 +202,7 @@ public class SessionImpl implements Session {
             }
         }
     }
-    
+
     @Override
     public void rollback() {
         this.unlockNodes();
@@ -230,6 +230,8 @@ public class SessionImpl implements Session {
             this.workspace.clear();
             this.revision = this.repository.currentRevisionId();
 
+            logger.debug( "Refreshed session. Now on revision <{}>.", this.revision);
+            
             this.fireEvent( new Session.Event.Refreshed( this));
         }
     }
