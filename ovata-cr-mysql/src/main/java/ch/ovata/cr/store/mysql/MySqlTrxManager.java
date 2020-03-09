@@ -115,6 +115,8 @@ public class MySqlTrxManager extends AbstractTrxManager {
                         MySqlTransaction trx = createTransaction( connection, session, message);
 
                         checkForConflicts( trx);
+                        
+                        trx.markCommitted();
 
                         ((WorkspaceImpl)trx.getSession().getWorkspace()).appendChanges( trx);
                         insertTrx( trx);
