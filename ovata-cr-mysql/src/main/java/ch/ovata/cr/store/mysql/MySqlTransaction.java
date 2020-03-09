@@ -75,8 +75,8 @@ public class MySqlTransaction implements Transaction {
         this.username = resultSet.getString( USERNAME_FIELD);
         this.workspaceName = resultSet.getString( WORKSPACENAME_FIELD);
         this.revision = resultSet.getLong( REVISION_FIELD);
-        this.startTime = resultSet.getDate( STARTTIME_FIELD);
-        this.endTime = resultSet.getDate( ENDTIME_FIELD);
+        this.startTime = resultSet.getTimestamp( STARTTIME_FIELD);
+        this.endTime = resultSet.getTimestamp( ENDTIME_FIELD);
         this.state = State.valueOf( resultSet.getString( STATE_FIELD));
         this.message = resultSet.getString( COMMIT_MESSAGE_FIELD);
         

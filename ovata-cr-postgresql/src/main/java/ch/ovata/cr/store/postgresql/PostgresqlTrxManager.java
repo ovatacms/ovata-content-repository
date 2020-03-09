@@ -72,7 +72,7 @@ public class PostgresqlTrxManager extends AbstractTrxManager {
 
     @Override
     public List<Transaction> getTransactions( String workspaceName, long lowerBound) {
-        String sql = "SELECT * FROM " + getTrxTableName() + " WHERE (WORKSPACE_NAME = ?) AND (REVISION > ?)";
+        String sql = "SELECT * FROM " + getTrxTableName() + " WHERE (WORKSPACE_NAME = ?) AND (REVISION > ?) ORDER BY REVISION DESC";
         
         try( Connection c = this.getDatabase().getDbConnection( ); PreparedStatement stmt = c.prepareStatement( sql)) {
             stmt.setString( 1, workspaceName);
