@@ -17,8 +17,14 @@ import ch.ovata.cr.api.Binary;
 import ch.ovata.cr.api.NotFoundException;
 import ch.ovata.cr.api.RepositoryException;
 import ch.ovata.cr.spi.store.blob.BlobStore;
+import ch.ovata.cr.tools.IOUtils;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -100,7 +106,27 @@ public class PostgresqlBlobStore implements BlobStore {
 
     @Override
     public Binary createBlob(InputStream in, String filename, String contentType) {
-        return createBlob( in, -1, filename, contentType);
+        try {
+            File temp = File.createTempFile( "blob_", "_upload");
+            
+            try {
+                long length;
+                
+                try( FileOutputStream out = new FileOutputStream( temp)) {
+                    length = IOUtils.copy(in, out);
+                }
+
+                try( FileInputStream filein = new FileInputStream( temp)) {
+                    return createBlob( filein, length, filename, contentType);
+                }
+            }
+            finally {
+                Files.delete( temp.toPath());
+            }
+        }
+        catch( IOException e) {
+            throw new RepositoryException( "Could not create Blob.", e);
+        }
     }
 
     @Override

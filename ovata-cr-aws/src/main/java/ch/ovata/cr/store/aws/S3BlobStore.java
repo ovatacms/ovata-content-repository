@@ -116,7 +116,7 @@ public class S3BlobStore implements BlobStore {
 
     @Override
     public Binary createBlob(byte[] data, String filename, String contentType) {
-        return createBlob( new ByteArrayInputStream( data), filename, contentType);
+        return createBlob( new ByteArrayInputStream( data), data.length, filename, contentType);
     }
     
     @Override
