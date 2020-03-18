@@ -18,7 +18,7 @@ import ch.ovata.cr.api.RepositoryConnectionDataSource;
 import ch.ovata.cr.impl.concurrency.LocalConcurrencyControlFactory;
 import ch.ovata.cr.store.mysql.MySqlBlobStoreFactory;
 import ch.ovata.cr.store.mysql.MySqlConnection;
-import ch.ovata.cr.store.mysql.search.MySqlSearchProviderFactory;
+import ch.ovata.cr.store.mysql.search.MySqlFulltextSearchProviderFactory;
 import java.sql.SQLException;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
@@ -32,21 +32,21 @@ public class RCMySql implements RepositoryConnectionDataSource {
 
     private static final Logger logger = LoggerFactory.getLogger( RCMySql.class);
     
-    private BasicDataSource dataSource = new BasicDataSource();
+    private final BasicDataSource dataSource = new BasicDataSource();
     
     @Override
     public RepositoryConnection getConnection() {
         dataSource.setDriverClassName( "com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl( "jdbc:mysql://192.168.5.25:3307/test");
-        dataSource.setUsername( "admin");
-        dataSource.setPassword( "superman");
+        dataSource.setUrl( "jdbc:mysql://192.168.56.101:3306/etest");
+        dataSource.setUsername( "etest");
+        dataSource.setPassword( "etest");
         dataSource.setInitialSize( 5);
         dataSource.setDefaultAutoCommit( false);
         
         LocalConcurrencyControlFactory ccf = new LocalConcurrencyControlFactory();
         MySqlBlobStoreFactory bsf = new MySqlBlobStoreFactory( dataSource);
         MySqlConnection connection = new MySqlConnection( dataSource, bsf, ccf);
-        MySqlSearchProviderFactory spf = new MySqlSearchProviderFactory();
+        MySqlFulltextSearchProviderFactory spf = new MySqlFulltextSearchProviderFactory( bsf, connection);
         
         return new RepositoryConnectionImpl( connection, spf);
     }

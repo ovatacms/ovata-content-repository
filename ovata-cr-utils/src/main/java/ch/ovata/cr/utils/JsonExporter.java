@@ -66,10 +66,8 @@ public class JsonExporter {
     
     private void writeProperties( JsonGenerator writer, Node node) {
         writer.writeStartObject( LABEL_PROPERTIES);
-        
-        for( Property p : node.getProperties()) {
-            writeProperty( writer, p);
-        }
+
+        node.getProperties().stream().forEach( p -> writeProperty( writer, p));
 
         writer.writeEnd();
     }
@@ -149,14 +147,14 @@ public class JsonExporter {
                 break;
             case MAP:
                 writer.writeStartObject( LABEL_VALUE);
-                
-                for( Map.Entry<String, Value> entry : v.getMap().entrySet()) {
+
+                v.getMap().entrySet().stream().forEach( entry  -> {
                     writer.writeStartObject( entry.getKey());
                     
                     writeValue( writer, session, entry.getValue());
                     
                     writer.writeEnd();
-                }
+                });
                 
                 writer.writeEnd();
                 break;

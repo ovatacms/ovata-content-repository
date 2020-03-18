@@ -34,6 +34,7 @@ public class MongoDbQueryByExample implements QueryByExample {
     private final Session session;
     private StoreDocument document;
     private String childOf = "";
+    private String aggregateTo;
     private String sortProperty;
     private int limit = Integer.MAX_VALUE;
     private int skip = 0;
@@ -53,6 +54,13 @@ public class MongoDbQueryByExample implements QueryByExample {
     @Override
     public QueryByExample childOf(String path) {
         this.childOf = path;
+        
+        return this;
+    }
+    
+    @Override
+    public QueryByExample aggregateTo( String type) {
+        this.aggregateTo = type;
         
         return this;
     }

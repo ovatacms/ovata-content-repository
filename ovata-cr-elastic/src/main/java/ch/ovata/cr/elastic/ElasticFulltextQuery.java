@@ -46,6 +46,7 @@ public class ElasticFulltextQuery implements FulltextQuery {
     
     private String term;
     private String childOf;
+    private String aggregateTo;
     private String sortProperty;
     private String[] nodeTypes = null;
     private int skip = 0;
@@ -66,6 +67,13 @@ public class ElasticFulltextQuery implements FulltextQuery {
     @Override
     public FulltextQuery childOf(String path) {
         this.childOf = path;
+        
+        return this;
+    }
+    
+    @Override
+    public FulltextQuery aggregateTo( String type) {
+        this.aggregateTo = type;
         
         return this;
     }

@@ -83,14 +83,9 @@ public class PostgresqlDatabase implements StoreDatabase {
         
         String i1 = String.format( "CREATE INDEX %s ON %s (PARENT_ID, NAME, REVISION);", fqtn + "_idx1", fqtn);
         
-        try( Connection c = getDbConnection()) {
-            try( Statement stmt = c.createStatement()) {
-                stmt.execute( sql);
-            }
-            
-            try( Statement stmt = c.createStatement()) {
-                stmt.execute( i1);
-            }
+        try( Connection c = getDbConnection(); Statement stmt = c.createStatement()) {
+            stmt.execute( sql);
+            stmt.execute( i1);
             
             c.commit();
         }

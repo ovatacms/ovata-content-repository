@@ -33,6 +33,7 @@ public class MongoDbFulltextQuery implements FulltextQuery {
     private final Session session;
     private String term;
     private String childOf = "";
+    private String aggregateTo;
     private String sortProperty;
     private String[] nodeTypes = null;
     private int limit = Integer.MAX_VALUE;
@@ -60,6 +61,13 @@ public class MongoDbFulltextQuery implements FulltextQuery {
     @Override
     public FulltextQuery childOf(String path) {
         this.childOf = path;
+        
+        return this;
+    }
+    
+    @Override
+    public FulltextQuery aggregateTo( String type) {
+        this.aggregateTo = type;
         
         return this;
     }
@@ -106,8 +114,6 @@ public class MongoDbFulltextQuery implements FulltextQuery {
     }
 
     private Optional<Node> findNode( NodeId id) {
-        Optional<Node> node = this.session.findNodeByIdentifier( id.getUUID());
-        
-        return node.filter( n -> n.getRevision() == id.getRevision());
+        return this.session.findNodeByIdentifier( id.getUUID()).filter( n -> n.getRevision() == id.getRevision());
     }
 }

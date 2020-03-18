@@ -42,6 +42,11 @@ public class PostgresqlFulltextQuery implements FulltextQuery {
     public FulltextQuery childOf(String path) {
         return this;
     }
+    
+    @Override
+    public FulltextQuery aggregateTo( String type) {
+        return this;
+    }
 
     @Override
     public List<Node> execute() {

@@ -1,5 +1,5 @@
 /*
- * $Id: PostgresqlQueryByExample.java 2845 2019-11-22 10:20:25Z dani $
+ * $Id: MySqlQueryByExample.java 697 2017-03-06 18:12:59Z dani $
  * Created on 29.01.2018, 16:00:00
  * 
  * Copyright (c) 2018 by Ovata GmbH,
@@ -11,7 +11,7 @@
  * it only in accordance with the terms of the license agreement
  * you entered into with Ovata GmbH.
  */
-package ch.ovata.cr.store.postgresql.search;
+package ch.ovata.cr.store.mysql.search;
 
 import ch.ovata.cr.api.Node;
 import ch.ovata.cr.api.Session;
@@ -24,14 +24,10 @@ import java.util.List;
  *
  * @author dani
  */
-public class PostgresqlQueryByExample implements QueryByExample {
+public class MySqlSimpleQueryByExample extends MySqlBaseQuery implements QueryByExample {
 
-    private final PostgresqlSearchProvider provider;
-    private final Session session;
-    
-    public PostgresqlQueryByExample( PostgresqlSearchProvider provider, Session session) {
-        this.provider = provider;
-        this.session = session;
+    public MySqlSimpleQueryByExample( MySqlSearchProvider provider, Session session) {
+        super( session, provider);
     }
     
     @Override
@@ -42,16 +38,6 @@ public class PostgresqlQueryByExample implements QueryByExample {
     @Override
     public QueryByExample childOf(String path) {
         return this;
-    }
-    
-    @Override
-    public QueryByExample aggregateTo( String type) {
-        return this;
-    }
-
-    @Override
-    public List<Node> execute() {
-        throw new UnsupportedOperationException( "Not implemented.");
     }
 
     @Override
@@ -72,5 +58,15 @@ public class PostgresqlQueryByExample implements QueryByExample {
     @Override
     public Query types(String... types) {
         return this;
+    }
+
+    @Override
+    public Query aggregateTo(String type) {
+        return this;
+    }
+
+    @Override
+    public List<Node> execute() {
+        throw new UnsupportedOperationException( "Not implemented.");
     }
 }

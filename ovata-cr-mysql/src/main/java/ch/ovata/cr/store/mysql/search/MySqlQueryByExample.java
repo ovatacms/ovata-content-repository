@@ -26,10 +26,10 @@ import java.util.List;
  */
 public class MySqlQueryByExample implements QueryByExample {
 
-    private final MySqlSearchProvider provider;
+    private final MySqlFulltextSearchProvider provider;
     private final Session session;
     
-    public MySqlQueryByExample( MySqlSearchProvider provider, Session session) {
+    public MySqlQueryByExample( MySqlFulltextSearchProvider provider, Session session) {
         this.provider = provider;
         this.session = session;
     }
@@ -44,6 +44,11 @@ public class MySqlQueryByExample implements QueryByExample {
         return this;
     }
 
+    @Override
+    public QueryByExample aggregateTo( String type) {
+        return this;
+    }
+    
     @Override
     public List<Node> execute() {
         throw new UnsupportedOperationException( "Not implemented.");

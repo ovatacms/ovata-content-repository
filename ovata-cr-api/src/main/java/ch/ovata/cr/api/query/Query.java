@@ -35,6 +35,13 @@ public interface Query {
     Query childOf( String path);
     
     /**
+     * Aggregate the result to a specific node type
+     * @param type the node type to aggregate to
+     * @return the query itself
+     */
+    Query aggregateTo( String type);
+    
+    /**
      * The node types to select
      * @param types the node types to filter
      * @return the query itself for chaining

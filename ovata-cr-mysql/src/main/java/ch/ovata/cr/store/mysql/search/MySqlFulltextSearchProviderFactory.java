@@ -17,27 +17,31 @@ import ch.ovata.cr.spi.search.SearchProvider;
 import ch.ovata.cr.spi.search.SearchProviderFactory;
 import ch.ovata.cr.spi.store.blob.BlobStoreFactory;
 import ch.ovata.cr.store.mysql.MySqlConnection;
+import javax.sql.DataSource;
 
 /**
  *
  * @author dani
  */
-public class MySqlSearchProviderFactory implements SearchProviderFactory {
+public class MySqlFulltextSearchProviderFactory implements SearchProviderFactory {
 
     private final BlobStoreFactory blobStoreFactory;
     private final MySqlConnection connection;
+    private final FulltextIndexer indexer;
     
-    public MySqlSearchProviderFactory( BlobStoreFactory blobStoreFactory, MySqlConnection connection) {
+    public MySqlFulltextSearchProviderFactory( BlobStoreFactory blobStoreFactory, MySqlConnection connection) {
         this.blobStoreFactory = blobStoreFactory;
         this.connection = connection;
+        this.indexer = new FulltextIndexer( blobStoreFactory, this.connection.unwrap( DataSource.class));
     }
     
     @Override
     public SearchProvider createSearchProvider(String databaseName) {
-        return new MySqlSearchProvider( this.blobStoreFactory, this.connection, databaseName);
+        return new MySqlFulltextSearchProvider( this.blobStoreFactory, this.connection, databaseName, this.indexer);
     }
 
     @Override
     public void shutdown() {
+        this.indexer.shutdown();
     }
 }

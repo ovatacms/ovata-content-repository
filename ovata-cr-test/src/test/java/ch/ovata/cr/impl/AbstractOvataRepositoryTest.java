@@ -71,10 +71,10 @@ public abstract class AbstractOvataRepositoryTest {
         System.setProperty( "org.slf4j.simpleLogger.defaultLogLevel", "info");
         System.setProperty( "org.slf4j.simpleLogger.log.ch.ovata.cr", "debug");
         // Choose implementation to test
-        // ds = new RCMySql();
+         ds = new RCMySql();
         // ds = new RCPostgresqlElastic();
         // ds = new RCPostgresqlFS();
-        ds = new RCMongoDbS3();
+//        ds = new RCMongoDbS3();
         
         
         this.connection = ds.getConnection();

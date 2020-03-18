@@ -14,7 +14,6 @@
 package ch.ovata.cr.store.mongodb.search;
 
 import ch.ovata.cr.api.Node;
-import ch.ovata.cr.api.Property;
 import ch.ovata.cr.api.Repository;
 import ch.ovata.cr.api.Session;
 import ch.ovata.cr.api.Value;
@@ -69,11 +68,8 @@ public class MongoDbFulltextSearchProvider extends MongoDbSearchProvider {
     }
     
     private void indexProperties( Node node, long revision) {
-        for( Property p : node.getProperties()) {
-            Value v = p.getValue();
-            if( v.getType() == Value.Type.BINARY) {
-                indexer.index( new FulltextIndexingRequest( node.getSession().getRepository().getName(), node.getSession().getWorkspace().getName(), node.getNodeId(), revision, v.getBinary().getId()));
-            }
-        }
+        node.getProperties().stream().map( p -> p.getValue()).filter( v -> v.getType() == Value.Type.BINARY).forEach( v -> {
+            indexer.index( new FulltextIndexingRequest( node.getSession().getRepository().getName(), node.getSession().getWorkspace().getName(), node.getNodeId(), revision, v.getBinary().getId()));
+        });
     }
 }

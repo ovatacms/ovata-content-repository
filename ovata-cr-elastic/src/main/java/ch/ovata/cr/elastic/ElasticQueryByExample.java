@@ -47,7 +47,9 @@ public class ElasticQueryByExample implements QueryByExample {
     
     private StoreDocument example = null;
     private String childOf;
+    private String aggregateTo;
     private String[] nodeTypes = null;
+    
     private String sortBy;
     private int skip = 0;
     private int limit = 500;
@@ -71,6 +73,13 @@ public class ElasticQueryByExample implements QueryByExample {
         return this;
     }
 
+    @Override
+    public QueryByExample aggregateTo( String type) {
+        this.aggregateTo = type;
+        
+        return this;
+    }
+    
     @Override
     public Query sortBy(String propertyName) {
         this.sortBy = propertyName;

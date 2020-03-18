@@ -21,6 +21,11 @@ import ch.ovata.cr.api.query.Query;
 import ch.ovata.cr.api.query.QueryByExample;
 import ch.ovata.cr.spi.base.DirtyState;
 import ch.ovata.cr.spi.search.SearchProvider;
+import ch.ovata.cr.spi.store.blob.BlobStore;
+import ch.ovata.cr.spi.store.blob.BlobStoreFactory;
+import ch.ovata.cr.store.mysql.MySqlConnection;
+import java.sql.SQLException;
+import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,36 +35,51 @@ import org.slf4j.LoggerFactory;
  */
 public class MySqlSearchProvider implements SearchProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger( MySqlSearchProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(MySqlSearchProvider.class);
     
-    private final String databaseName;
+    protected final BlobStoreFactory blobStoreFactory;
+    protected final MySqlConnection connection;
+    protected final String databaseName;
     
-    public MySqlSearchProvider( String databaseName) {
+    public MySqlSearchProvider( BlobStoreFactory blobStoreFactory, MySqlConnection connection, String databaseName) {
+        this.blobStoreFactory = blobStoreFactory;
+        this.connection = connection;
         this.databaseName = databaseName;
-    }
-    
-    @Override
-    public void reindexWorkspace(Repository repository, String workspaceName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void clearIndex(String workspaceName) {
-        logger.info( "Dummy clearing index.");
+        logger.info( "No index to clear.");
+    }
+
+    @Override
+    public void reindexWorkspace( Repository repository, String workspaceName) {
+        logger.info( "Re-Indexation for this provider not supported.");
     }
 
     @Override
     public void indexNodes( DirtyState dirtyState, long revision) {
-        logger.info( "Dummy indexing nodes.");
+    }
+
+    public BlobStore getBlobStore() {
+        return this.blobStoreFactory.createBlobStore( this.databaseName);
+    }
+    
+    public DataSource getDataSource() throws SQLException {
+        return this.connection.unwrap( DataSource.class);
+    }
+    
+    public String getDatabaseName() {
+        return this.databaseName;
     }
 
     @Override
     public <T extends Query> T createQuery(Session session, Class<T> type) {
         if( QueryByExample.class == type) {
-            return (T)new MySqlQueryByExample( this, session);
+            return (T)new MySqlSimpleQueryByExample( this, session);
         }
         else if( FulltextQuery.class == type) {
-            return (T)new MySqlFulltextQuery( this, session);
+            return (T)new MySqlSimpleFulltextQuery( session, this);
         }
         else {
             throw new RepositoryException( "Unknown query type <" + type.getName() + ">.");

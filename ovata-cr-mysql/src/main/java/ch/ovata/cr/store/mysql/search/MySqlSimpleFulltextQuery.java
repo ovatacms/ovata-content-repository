@@ -33,8 +33,8 @@ import java.util.stream.Stream;
  *
  * @author dani
  */
-public class MySqlFulltextQuery extends MySqlBaseQuery implements FulltextQuery {
-
+public class MySqlSimpleFulltextQuery extends MySqlBaseQuery implements FulltextQuery {
+    
     private String term;
     private String childOf;
     private String aggregateTo;
@@ -43,7 +43,7 @@ public class MySqlFulltextQuery extends MySqlBaseQuery implements FulltextQuery 
     private int limit = Integer.MAX_VALUE;
     private final List<String> types = new ArrayList<>();
     
-    public MySqlFulltextQuery( Session session, MySqlFulltextSearchProvider provider) {
+    public MySqlSimpleFulltextQuery( Session session, MySqlSearchProvider provider) {
         super( session, provider);
     }
     
@@ -100,16 +100,16 @@ public class MySqlFulltextQuery extends MySqlBaseQuery implements FulltextQuery 
     @Override
     public List<Node> execute() {
         try( Connection connection = this.provider.getDataSource().getConnection()) {
-            try( PreparedStatement stmt = connection.prepareStatement( "SELECT NODE_ID, REVISION FROM " + getTableName() + " WHERE MATCH (CONTENTTEXT) AGAINST (?)")) {
-                stmt.setString( 1, term);
-
+            try( PreparedStatement stmt = connection.prepareStatement( "SELECT NODE_ID, REVISION FROM " + getTableName() + " WHERE PAYLOAD LIKE ?")) {
+                stmt.setString( 1, "%" + term + "%");
+                
                 Stream<Node> stream = this.fetchNodeIds( stmt).stream().map( this::findNode).filter( Optional::isPresent).map( Optional::get);
 
                 if( this.aggregateTo != null) {
                     stream = stream.map( n -> aggregate( n, aggregateTo)).filter( Optional::isPresent).map( Optional::get);
                 }
                 
-                if( !this.types.isEmpty()) {
+                if( !types.isEmpty()) {
                     stream = stream.filter( n -> types.contains( n.getType()));
                 }
 

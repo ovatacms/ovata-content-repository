@@ -70,20 +70,24 @@ public class MySqlDatabase implements StoreDatabase {
     }
     
     private void createCollection( String tableName) {
+        String fqtn = this.databaseName + "_" + tableName;
         String sql = SqlUtils.createStatement( "CREATE TABLE `%s` (" +
                     "NODE_ID CHAR( 36)," +
                     "REVISION BIGINT," +
                     "PARENT_ID CHAR( 36)," +
                     "NAME VARCHAR( 255)," +
                     "REMOVED BOOLEAN," +
-                    "PAYLOAD MEDIUMTEXT," +
+                    "PAYLOAD JSON," +
+                    "CONTENTTEXT TEXT," +
+                    "FULLTEXT KEY (CONTENTTEXT) WITH PARSER ngram," +
                     "PRIMARY KEY (NODE_ID, REVISION)" +
-                ")", this.databaseName + "_" + tableName);
+                ")", fqtn);
         
-        try( Connection c = getDbConnection()) {
-            try( Statement stmt = c.createStatement()) {
-                stmt.execute( sql);
-            }
+        String i1 = String.format( "CREATE INDEX %s ON %s (PARENT_ID, NAME, REVISION);", fqtn + "_idx1", fqtn);
+
+        try( Connection c = getDbConnection(); Statement stmt = c.createStatement()) {
+            stmt.execute( sql);
+            stmt.execute( i1);
         }
         catch( SQLException e) {
             throw new RepositoryException( "Could not create collection <" + tableName + ">.", e);
@@ -92,10 +96,8 @@ public class MySqlDatabase implements StoreDatabase {
 
     @Override
     public void dropCollection(String name) {
-        try( Connection c = getDbConnection()) {
-            try( Statement stmt = c.createStatement()) {
-                stmt.execute( SqlUtils.createStatement("DROP TABLE `%s`", this.databaseName + "_" + name));
-            }
+        try( Connection c = getDbConnection(); Statement stmt = c.createStatement()) {
+            stmt.execute( SqlUtils.createStatement("DROP TABLE `%s`", this.databaseName + "_" + name));
         }
         catch( SQLException e) {
             throw new RepositoryException( "Could not drop collection <" + name + ">.", e);

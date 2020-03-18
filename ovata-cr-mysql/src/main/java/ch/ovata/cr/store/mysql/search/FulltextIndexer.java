@@ -11,22 +11,19 @@
  * it only in accordance with the terms of the license agreement
  * you entered into with Ovata GmbH.
  */
-package ch.ovata.cr.store.mongodb.fulltext;
+package ch.ovata.cr.store.mysql.search;
 
 import ch.ovata.cr.api.Binary;
-import ch.ovata.cr.api.Node;
 import ch.ovata.cr.spi.store.blob.BlobStore;
 import ch.ovata.cr.spi.store.blob.BlobStoreFactory;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.result.UpdateResult;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import javax.sql.DataSource;
 import org.apache.tika.exception.TikaException;
-import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -42,11 +39,11 @@ public class FulltextIndexer {
     private final ThreadPoolExecutor executor = new ThreadPoolExecutor( 1, 2, 5, TimeUnit.SECONDS, new ArrayBlockingQueue( 1000));
     
     private final BlobStoreFactory factory;
-    private final MongoClient client;
+    private final DataSource dataSource;
     
-    public FulltextIndexer( BlobStoreFactory factory, MongoClient client) {
+    public FulltextIndexer( BlobStoreFactory factory, DataSource dataSource) {
         this.factory = factory;
-        this.client = client;
+        this.dataSource = dataSource;
     }
     
     public void shutdown() {
@@ -72,23 +69,13 @@ public class FulltextIndexer {
             BlobStore store = factory.createBlobStore( request.getRepositoryName());
             Binary binary = store.findBlob( request.getBinaryId());
             
-            try {
+            try( Connection c = dataSource.getConnection()) {
                 String text = TextExtractor.extract( binary);
-
-                MongoDatabase database = client.getDatabase( request.getRepositoryName());
-                MongoCollection<Document> collection = database.getCollection( request.getWorkspaceName());
-
-                Document filter = new Document( Node.NODE_ID_FIELD, new Document( Node.UUID_FIELD, request.getNodeId().getUUID()).append( Node.REVISION_FIELD, request.getRevision()));
-                Document update = new Document( "$set", new Document( Node.FULLTEXT_FIELD, text));
-
-                UpdateResult result = collection.updateOne( filter, update);
-
-                if( result.getModifiedCount() != 1 ) {
-                    logger.warn( "Could not update fulltext field for node with id <{}> and revision <{}>.", request.getNodeId().getUUID(), request.getNodeId().getRevision());
-                }
+                
+                MySqlFulltextSearchProvider.updateFulltext( c, request.getRepositoryName(), request.getWorkspaceName(), request.getNodeId(), request.getRevision(), text);
             }
-            catch( IOException | SAXException | TikaException e) {
-                logger.warn( "Could not extract text from {}.", binary.getId());
+            catch( IOException | SQLException | SAXException | TikaException e) {
+                logger.warn( "Could not extract/update fulltext index for node <{}>.", request.getNodeId());
             }
         }
     }
