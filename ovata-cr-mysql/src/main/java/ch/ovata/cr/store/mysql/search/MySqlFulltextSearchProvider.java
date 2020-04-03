@@ -31,6 +31,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import javax.sql.DataSource;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,7 +114,7 @@ public class MySqlFulltextSearchProvider extends MySqlSearchProvider {
             for( Property p : node.getProperties()) {
                 String s = toString( p);
                 
-                if( (s != null) && !s.isBlank()) {
+                if( !StringUtils.isBlank( s)) {
                     text.append( s);
                     text.append( "\n");
                 }
