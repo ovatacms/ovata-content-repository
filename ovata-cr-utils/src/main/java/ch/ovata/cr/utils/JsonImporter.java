@@ -21,6 +21,7 @@ import ch.ovata.cr.api.ValueFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -32,9 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import javax.json.Json;
-import javax.json.JsonNumber;
-import javax.json.JsonString;
-import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -241,7 +239,7 @@ public class JsonImporter {
         
         @Override
         public Importer valueString( JsonParser reader) {
-            this.node.setType( ((JsonString)reader.getValue()).getString());
+            this.node.setType( reader.getString());
   
             return this.parent;
         }
@@ -331,7 +329,7 @@ public class JsonImporter {
     }
     
     private static class StringValueImporter extends ValueImporter {
-        protected JsonString value;
+        protected String value;
         
         public StringValueImporter( ImporterContext context, Importer parent) {
             super( context, parent);
@@ -339,20 +337,20 @@ public class JsonImporter {
         
         @Override
         public Importer valueString( JsonParser reader) {
-            this.value = (JsonString)reader.getValue();
+            this.value = reader.getString();
             
             return parent;
         }
         
         @Override
         public Value getValue() {
-            return this.context.getValueFactory().of( this.value.getString());
+            return this.context.getValueFactory().of( this.value);
         }
     }
     
     private static class LongValueImporter extends ValueImporter {
         
-        private JsonNumber value;
+        private BigDecimal value;
         
         public LongValueImporter( ImporterContext context, Importer parent) {
             super( context, parent);
@@ -360,7 +358,7 @@ public class JsonImporter {
         
         @Override
         public Importer valueNumber( JsonParser reader) {
-            this.value = (JsonNumber)reader.getValue();
+            this.value = reader.getBigDecimal();
             
             return parent;
         }
@@ -373,7 +371,7 @@ public class JsonImporter {
     
     private static class DoubleValueImporter extends ValueImporter {
         
-        private JsonNumber value;
+        private BigDecimal value;
         
         public DoubleValueImporter( ImporterContext context, Importer parent) {
             super( context, parent);
@@ -381,7 +379,7 @@ public class JsonImporter {
         
         @Override
         public Importer valueNumber( JsonParser reader) {
-            this.value = (JsonNumber)reader.getValue();
+            this.value = reader.getBigDecimal();
             
             return parent;
         }
@@ -394,7 +392,7 @@ public class JsonImporter {
     
     private static class DecimalValueImporter extends ValueImporter {
 
-        private JsonNumber value;
+        private BigDecimal value;
         
         public DecimalValueImporter( ImporterContext context, Importer parent) {
             super( context, parent);
@@ -402,20 +400,20 @@ public class JsonImporter {
         
         @Override
         public Importer valueNumber( JsonParser reader) {
-            this.value = (JsonNumber)reader.getValue();
+            this.value =reader.getBigDecimal();
             
             return parent;
         }
         
         @Override
         public Value getValue() {
-            return this.context.getValueFactory().of( this.value.bigDecimalValue());
+            return this.context.getValueFactory().of( this.value);
         }
     }
 
     private static class BooleanValueImporter extends ValueImporter {
     
-        private JsonValue value;
+        private Boolean value;
         
         public BooleanValueImporter( ImporterContext context, Importer reader) {
             super( context, reader);
@@ -423,27 +421,27 @@ public class JsonImporter {
     
         @Override
         public Importer valueTrue( JsonParser reader) {
-            this.value = reader.getValue();
+            this.value = Boolean.valueOf( reader.getString());
             
             return parent;
         }
 
         @Override
         public Importer valueFalse( JsonParser reader) {
-            this.value = reader.getValue();
+            this.value = Boolean.valueOf( reader.getString());
             
             return parent;
         }
         
         @Override
         public Value getValue() {
-            return this.context.getValueFactory().of( this.value == JsonValue.TRUE);
+            return this.context.getValueFactory().of( Boolean.TRUE.equals( this.value));
         }
     }
     
     private static class StringImporter extends AbstractImporter {
         
-        private JsonString value;
+        private String value;
         
         public StringImporter( ImporterContext context, Importer parent) {
             super( context, parent);
@@ -451,19 +449,19 @@ public class JsonImporter {
         
         @Override
         public Importer valueString( JsonParser reader) {
-            this.value = ((JsonString)reader.getValue());
+            this.value = reader.getString();
             
             return this.parent;
         }
         
-        public JsonString getValue() {
+        public String getValue() {
             return this.value;
         }
     }
     
     private static class NumberImporter extends AbstractImporter {
         
-        private JsonNumber value;
+        private BigDecimal value;
         
         public NumberImporter( ImporterContext context, Importer parent) {
             super( context, parent);
@@ -471,12 +469,12 @@ public class JsonImporter {
         
         @Override
         public Importer valueNumber( JsonParser reader) {
-            this.value = (JsonNumber)reader.getValue();
+            this.value = reader.getBigDecimal();
             
             return this.parent;
         }
         
-        public JsonNumber getValue() {
+        public BigDecimal getValue() {
             return this.value;
         }
     }
@@ -490,7 +488,7 @@ public class JsonImporter {
         @Override
         public Value getValue() {
             ValueFactory vf = this.context.getValueFactory();
-            String ref = this.value.getString();
+            String ref = this.value;
             String[] parts = ref.split( ":");
             String workspaceName = parts[0];
             String path = parts[1];
@@ -546,10 +544,10 @@ public class JsonImporter {
         
         @Override
         public Importer endObject( JsonParser reader) {
-            String b = vib.getValue().getString();
+            String b = vib.getValue();
 
             try( InputStream in = Base64.getDecoder().wrap( new ByteArrayInputStream( b.getBytes( StandardCharsets.UTF_8)))) {
-                this.value = this.context.getValueFactory().binary( in, vifn.getValue().getString(), vict.getValue().getString());
+                this.value = this.context.getValueFactory().binary( in, vifn.getValue(), vict.getValue());
             }
             catch( IOException e) {
                 logger.warn( "Could not read binary value form dump.");
@@ -566,11 +564,11 @@ public class JsonImporter {
         }
         
         public String getContentType() {
-            return vict.getValue().getString();
+            return vict.getValue();
         }
         
         public String getFilename() {
-            return vifn.getValue().getString();
+            return vifn.getValue();
         }
     }
     
@@ -582,7 +580,7 @@ public class JsonImporter {
         
         @Override
         public Value getValue() {
-            return this.context.getValueFactory().of( LocalDate.from( DateTimeFormatter.ISO_LOCAL_DATE.parse( this.value.getString())));
+            return this.context.getValueFactory().of( LocalDate.from( DateTimeFormatter.ISO_LOCAL_DATE.parse( this.value)));
         }
     }
     
@@ -594,7 +592,7 @@ public class JsonImporter {
         
         @Override
         public Value getValue() {
-            return this.context.getValueFactory().of( ZonedDateTime.from( DateTimeFormatter.ISO_ZONED_DATE_TIME.parse( this.value.getString())));
+            return this.context.getValueFactory().of( ZonedDateTime.from( DateTimeFormatter.ISO_ZONED_DATE_TIME.parse( this.value)));
         }
     }
     
