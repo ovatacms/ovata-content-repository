@@ -114,7 +114,7 @@ public class MySqlFulltextQuery extends MySqlBaseQuery implements FulltextQuery 
                 }
 
                 if( this.childOf != null) {
-                    stream.filter( n -> n.getPath().startsWith( this.childOf));
+                    stream = stream.filter( n -> n.getPath().startsWith( this.childOf));
                 }
                 
                 if( this.sortBy != null) {

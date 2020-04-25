@@ -24,8 +24,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,7 +44,7 @@ public class MySqlSimpleFulltextQuery extends MySqlBaseQuery implements Fulltext
     private String sortBy;
     private int skip = 0;
     private int limit = Integer.MAX_VALUE;
-    private final List<String> types = new ArrayList<>();
+    private final Set<String> types = new HashSet<>();
     
     public MySqlSimpleFulltextQuery( Session session, MySqlSearchProvider provider) {
         super( session, provider);
@@ -100,7 +103,7 @@ public class MySqlSimpleFulltextQuery extends MySqlBaseQuery implements Fulltext
     @Override
     public List<Node> execute() {
         try( Connection connection = this.provider.getDataSource().getConnection()) {
-            try( PreparedStatement stmt = connection.prepareStatement( "SELECT NODE_ID, REVISION FROM " + getTableName() + " WHERE PAYLOAD LIKE ?")) {
+            try( PreparedStatement stmt = connection.prepareStatement( "SELECT NODE_ID, MAX(REVISION) AS REVISION FROM " + getTableName() + " WHERE PAYLOAD LIKE ? GROUP BY NODE_ID")) {
                 stmt.setString( 1, "%" + term + "%");
                 
                 Stream<Node> stream = this.fetchNodeIds( stmt).stream().map( this::findNode).filter( Optional::isPresent).map( Optional::get);
@@ -114,14 +117,18 @@ public class MySqlSimpleFulltextQuery extends MySqlBaseQuery implements Fulltext
                 }
 
                 if( this.childOf != null) {
-                    stream.filter( n -> n.getPath().startsWith( this.childOf));
+                    stream = stream.filter( n -> n.getPath().startsWith( this.childOf));
                 }
                 
                 if( this.sortBy != null) {
                     stream = stream.sorted( new PropertyComparatorIfAvailable( this.sortBy));
                 }
 
-                return stream.skip( this.skip).limit( this.limit).collect( Collectors.toList());
+                Set<Node> result = stream.skip( this.skip)
+                                            .limit( this.limit)
+                                                .collect( Collectors.toCollection( () -> new LinkedHashSet<>()));
+                
+                return new ArrayList( result);
             }
         }
         catch( SQLException e) {
