@@ -111,6 +111,9 @@ public class MySqlTrxManager extends AbstractTrxManager {
         try {
             if( this.ccontrol.acquireLock()) {
                 try( Connection connection = ((MySqlDatabase)this.database).getDbConnection()) {
+                    // This resets all pending stuff and ensures, we see latest data
+                    connection.rollback();
+
                     try {
                         MySqlTransaction trx = createTransaction( connection, session, message);
 
