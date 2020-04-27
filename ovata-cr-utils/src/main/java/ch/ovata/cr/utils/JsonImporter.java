@@ -350,7 +350,7 @@ public class JsonImporter {
     
     private static class LongValueImporter extends ValueImporter {
         
-        private BigDecimal value;
+        private long value;
         
         public LongValueImporter( ImporterContext context, Importer parent) {
             super( context, parent);
@@ -358,20 +358,20 @@ public class JsonImporter {
         
         @Override
         public Importer valueNumber( JsonParser reader) {
-            this.value = reader.getBigDecimal();
+            this.value = reader.getLong();
             
             return parent;
         }
         
         @Override
         public Value getValue() {
-            return this.context.getValueFactory().of( this.value.longValue());
+            return this.context.getValueFactory().of( this.value);
         }
     }
     
     private static class DoubleValueImporter extends ValueImporter {
         
-        private BigDecimal value;
+        private double value;
         
         public DoubleValueImporter( ImporterContext context, Importer parent) {
             super( context, parent);
@@ -379,14 +379,14 @@ public class JsonImporter {
         
         @Override
         public Importer valueNumber( JsonParser reader) {
-            this.value = reader.getBigDecimal();
+            this.value = reader.getBigDecimal().doubleValue();
             
             return parent;
         }
         
         @Override
         public Value getValue() {
-            return this.context.getValueFactory().of( this.value.doubleValue());
+            return this.context.getValueFactory().of( this.value);
         }
     }
     
@@ -413,7 +413,7 @@ public class JsonImporter {
 
     private static class BooleanValueImporter extends ValueImporter {
     
-        private Boolean value;
+        private Boolean value = Boolean.FALSE;
         
         public BooleanValueImporter( ImporterContext context, Importer reader) {
             super( context, reader);
@@ -421,14 +421,14 @@ public class JsonImporter {
     
         @Override
         public Importer valueTrue( JsonParser reader) {
-            this.value = Boolean.valueOf( reader.getString());
+            this.value = Boolean.TRUE;
             
             return parent;
         }
 
         @Override
         public Importer valueFalse( JsonParser reader) {
-            this.value = Boolean.valueOf( reader.getString());
+            this.value = Boolean.FALSE;
             
             return parent;
         }

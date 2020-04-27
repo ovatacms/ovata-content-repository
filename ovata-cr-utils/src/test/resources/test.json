@@ -30,6 +30,10 @@
                         "a1" : {
                             "type" : "STRING",
                             "value" : "testmamp"
+                        },
+                        "a2" : {
+                            "type" : "BOOLEAN",
+                            "value" : true
                         }
                     }
                 }
