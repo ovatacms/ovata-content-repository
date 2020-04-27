@@ -4,7 +4,7 @@
     <groupId>ch.ovata.cr</groupId>
     <artifactId>ovata-cr-parent</artifactId>
     <name>Ovata Content Repository Parent</name>
-    <version>1.4.16</version>
+    <version>1.4.17-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -17,7 +17,7 @@
 
     <scm>
         <developerConnection>scm:git:https://github.com/ovatacms/ovata-content-repository.git</developerConnection>
-      <tag>1.4.16</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <dependencyManagement>
@@ -25,57 +25,57 @@
             <dependency>
                 <groupId>ch.ovata.cr</groupId>
                 <artifactId>ovata-cr-api</artifactId>
-                <version>1.4.16</version>
+                <version>1.4.17-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>ch.ovata.cr</groupId>
                 <artifactId>ovata-cr-impl</artifactId>
-                <version>1.4.16</version>
+                <version>1.4.17-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>ch.ovata.cr</groupId>
                 <artifactId>ovata-cr-bson</artifactId>
-                <version>1.4.16</version>
+                <version>1.4.17-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>ch.ovata.cr</groupId>
                 <artifactId>ovata-cr-mongodb</artifactId>
-                <version>1.4.16</version>
+                <version>1.4.17-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>ch.ovata.cr</groupId>
                 <artifactId>ovata-cr-aws</artifactId>
-                <version>1.4.16</version>
+                <version>1.4.17-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>ch.ovata.cr</groupId>
                 <artifactId>ovata-cr-elastic</artifactId>
-                <version>1.4.16</version>
+                <version>1.4.17-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>ch.ovata.cr</groupId>
                 <artifactId>ovata-cr-fs</artifactId>
-                <version>1.4.16</version>
+                <version>1.4.17-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>ch.ovata.cr</groupId>
                 <artifactId>ovata-cr-mysql</artifactId>
-                <version>1.4.16</version>
+                <version>1.4.17-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>ch.ovata.cr</groupId>
                 <artifactId>ovata-cr-postgresql</artifactId>
-                <version>1.4.16</version>
+                <version>1.4.17-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>ch.ovata.cr</groupId>
                 <artifactId>ovata-cr-hz</artifactId>
-                <version>1.4.16</version>
+                <version>1.4.17-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>ch.ovata.cr</groupId>
                 <artifactId>ovata-cr-utils</artifactId>
-                <version>1.4.16</version>
+                <version>1.4.17-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.amazonaws</groupId>
