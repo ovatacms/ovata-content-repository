@@ -139,6 +139,7 @@ public class MySqlBlobStore implements BlobStore {
                 stmt.setBinaryStream( 6, in);
                 
                 stmt.execute();
+                c.commit();
                 
                 return new MySqlBlob( this, id, filename, contentType, contentLength);
             }
@@ -168,6 +169,8 @@ public class MySqlBlobStore implements BlobStore {
                 
                 stmt.executeBatch();
             }
+            
+            c.commit();
         }
         catch( SQLException e) {
             throw new RepositoryException( "Could not delete blobs.", e);
