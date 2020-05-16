@@ -164,7 +164,7 @@ public class RepositoryImpl implements Repository {
     }
     
     private void checkWorkspace( String workspaceName) {
-        if( this.database.listCollectionNames().noneMatch( workspaceName::equals) ) {
+        if( this.database.listCollectionNames().noneMatch( workspaceName::equalsIgnoreCase) ) {
             throw new NotFoundException( "Did not find workspace with name <" + workspaceName + ">.");
         }
     }

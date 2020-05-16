@@ -69,6 +69,11 @@
             </dependency>
             <dependency>
                 <groupId>ch.ovata.cr</groupId>
+                <artifactId>ovata-cr-h2</artifactId>
+                <version>1.4.18-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.ovata.cr</groupId>
                 <artifactId>ovata-cr-hz</artifactId>
                 <version>1.4.18-SNAPSHOT</version>
             </dependency>
@@ -221,6 +226,7 @@
         <module>ovata-cr-hz</module>
         <module>ovata-cr-utils</module>
         <module>ovata-cr-bson</module>
+        <module>ovata-cr-h2</module>
     </modules>
 
 </project>
