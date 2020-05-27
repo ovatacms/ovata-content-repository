@@ -18,14 +18,14 @@ import ch.ovata.cr.api.security.Permission;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 public class ModifiableAcl implements Acl, Serializable {
 
     private Principal principal;
     private boolean isNegative;
-    private final Set<Permission> permissions = new HashSet<>();
+    private final Set<Permission> permissions = EnumSet.noneOf( Permission.class);
 
     public ModifiableAcl() {
         this.principal = null;

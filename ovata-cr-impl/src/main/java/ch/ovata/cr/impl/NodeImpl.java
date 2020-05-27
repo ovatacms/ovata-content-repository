@@ -44,8 +44,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -610,7 +610,7 @@ public class NodeImpl implements Node {
             
             private final Principal principal;
             private final boolean isNegative;
-            private final Set<Permission> permissions = new HashSet<>();
+            private final Set<Permission> permissions = EnumSet.noneOf( Permission.class);
 
             public AclImpl( Principal p, boolean isNegative, Collection<Permission> permissions) {
                 this.principal = p;
