@@ -37,9 +37,6 @@ import org.postgresql.util.PGobject;
  * @author dani
  */
 public class PostgresqlCollection implements StoreCollection {
-
-    private static final String PAYLOAD_FIELD = "PAYLOAD";
-    private static final String REMOVED_FIELD = "REMOVED";
     
     private final PostgresqlDatabase database;
     private final String name;
@@ -93,8 +90,8 @@ public class PostgresqlCollection implements StoreCollection {
             stmt.setLong( 2, revision);
 
             try( ResultSet r = stmt.executeQuery()) {
-                if( r.next() && !r.getBoolean( REMOVED_FIELD)) {
-                    Document doc = Document.parse( r.getString( PAYLOAD_FIELD));
+                if( r.next() && !r.getBoolean( 2)) {
+                    Document doc = Document.parse( r.getString( 1));
 
                     return new MongoDbDocument( doc);
                 }
@@ -119,7 +116,7 @@ public class PostgresqlCollection implements StoreCollection {
 
             try( ResultSet r = stmt.executeQuery()) {
                 if( r.next()) {
-                    Document doc = Document.parse( r.getString( PAYLOAD_FIELD));
+                    Document doc = Document.parse( r.getString( 1));
 
                     return new MongoDbDocument( doc);
                 }
@@ -145,7 +142,7 @@ public class PostgresqlCollection implements StoreCollection {
                 List<StoreDocument> result = new ArrayList();
 
                 while( r.next()) {
-                    Document doc = Document.parse( r.getString( PAYLOAD_FIELD));
+                    Document doc = Document.parse( r.getString( 1));
 
                     result.add( new MongoDbDocument( doc));
                 }

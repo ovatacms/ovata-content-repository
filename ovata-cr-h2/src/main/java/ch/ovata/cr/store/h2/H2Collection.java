@@ -95,8 +95,8 @@ public class H2Collection implements StoreCollection {
             stmt.setLong( 2, revision);
 
             try( ResultSet r = stmt.executeQuery()) {
-                if( r.next() && !r.getBoolean( REMOVED_FIELD)) {
-                    String json = toString( r.getCharacterStream( PAYLOAD_FIELD));
+                if( r.next() && !r.getBoolean( 2)) {
+                    String json = toString( r.getCharacterStream( 1));
                     Document doc = Document.parse( json);
 
                     return new MongoDbDocument( doc);
@@ -122,7 +122,7 @@ public class H2Collection implements StoreCollection {
 
             try( ResultSet r = stmt.executeQuery()) {
                 if( r.next()) {
-                    String json = toString( r.getCharacterStream( PAYLOAD_FIELD));
+                    String json = toString( r.getCharacterStream( 1));
                     Document doc = Document.parse( json);
 
                     return new MongoDbDocument( doc);
@@ -149,7 +149,7 @@ public class H2Collection implements StoreCollection {
                 List<StoreDocument> result = new ArrayList();
 
                 while( r.next()) {
-                    String json = toString( r.getCharacterStream( PAYLOAD_FIELD));
+                    String json = toString( r.getCharacterStream( 1));
                     Document doc = Document.parse( json);
 
                     result.add( new MongoDbDocument( doc));

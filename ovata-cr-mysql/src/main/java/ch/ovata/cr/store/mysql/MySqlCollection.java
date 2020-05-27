@@ -36,9 +36,6 @@ import org.bson.Document;
  * @author dani
  */
 public class MySqlCollection implements StoreCollection {
-
-    private static final String PAYLOAD_FIELD = "PAYLOAD";
-    private static final String REMOVED_FIELD = "REMOVED";
     
     private final MySqlDatabase database;
     private final String name;
@@ -92,8 +89,8 @@ public class MySqlCollection implements StoreCollection {
             stmt.setLong( 2, revision);
 
             try( ResultSet r = stmt.executeQuery()) {
-                if( r.next() && !r.getBoolean( REMOVED_FIELD)) {
-                    Document doc = Document.parse( r.getString( PAYLOAD_FIELD));
+                if( r.next() && !r.getBoolean( 2)) {
+                    Document doc = Document.parse( r.getString( 1));
 
                     return new MongoDbDocument( doc);
                 }
@@ -118,7 +115,7 @@ public class MySqlCollection implements StoreCollection {
 
             try( ResultSet r = stmt.executeQuery()) {
                 if( r.next()) {
-                    Document doc = Document.parse( r.getString( PAYLOAD_FIELD));
+                    Document doc = Document.parse( r.getString( 1));
 
                     return new MongoDbDocument( doc);
                 }
@@ -144,7 +141,7 @@ public class MySqlCollection implements StoreCollection {
                 List<StoreDocument> result = new ArrayList();
 
                 while( r.next()) {
-                    Document doc = Document.parse( r.getString( PAYLOAD_FIELD));
+                    Document doc = Document.parse( r.getString( 1));
 
                     result.add( new MongoDbDocument( doc));
                 }
