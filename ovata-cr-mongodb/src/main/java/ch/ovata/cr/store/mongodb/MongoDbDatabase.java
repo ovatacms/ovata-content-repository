@@ -72,16 +72,16 @@ public class MongoDbDatabase implements StoreDatabase {
     }
     
     public MongoDbCollection getCollection( String tableName) {
-        return new MongoDbCollection( this.client, this.database.getCollection( tableName));
+        return new MongoDbCollection( this.database.getCollection( tableName));
     }
     
     @Override
     public StoreCollection getOrCreateCollection( String tableName) {
         if( listCollectionNames().anyMatch( tableName::equals)) {
-            return new MongoDbCollection( this.client, database.getCollection( tableName));
+            return new MongoDbCollection( this.database.getCollection( tableName));
         }
 
-        return new MongoDbCollection( this.client, createCollection( tableName));
+        return new MongoDbCollection( createCollection( tableName));
     }
     
     public MongoCollection<Document> getTransactionsTable( String tableName) {

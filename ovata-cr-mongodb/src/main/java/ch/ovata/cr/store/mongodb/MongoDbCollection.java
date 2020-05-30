@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 import org.bson.Document;
 import ch.ovata.cr.spi.store.StoreDocumentIterable;
 import ch.ovata.cr.spi.store.Transaction;
-import com.mongodb.client.MongoClient;
 
 /**
  *
@@ -39,11 +38,9 @@ public class MongoDbCollection implements StoreCollection {
     private static final String ID_REVISION_FIELD = "_id.revision";
     private static final String ID_UUID_FIELD = "_id.uuid";
     
-    private final MongoClient client;
     private final MongoCollection<Document> collection;
     
-    public MongoDbCollection( MongoClient client, MongoCollection<Document> collection) {
-        this.client = client;
+    public MongoDbCollection( MongoCollection<Document> collection) {
         this.collection = collection;
     }
     
