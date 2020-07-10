@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.LongSupplier;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,10 +101,8 @@ public abstract class AbstractTrxManager implements TransactionManager {
     }
     
     private String concatNodeIds( Collection<String> nodeIds) {
-        StringBuilder ids = new StringBuilder();
-
-        nodeIds.stream().limit( 3).forEach( id -> ids.append( id).append( ","));
-
-        return ids.toString();
+        String ids = nodeIds.stream().limit( 3).collect( Collectors.joining( ","));
+        
+        return nodeIds.size() > 3 ? ids + ", ..." : ids;
     }
 }
