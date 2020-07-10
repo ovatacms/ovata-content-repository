@@ -17,8 +17,8 @@
 
     <scm>
         <developerConnection>scm:git:https://github.com/ovatacms/ovata-content-repository.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <dependencyManagement>
         <dependencies>
@@ -85,7 +85,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
-                <version>1.11.784</version>
+                <version>1.11.820</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -107,7 +107,7 @@
             <dependency>
                 <groupId>org.mongodb</groupId>
                 <artifactId>mongodb-driver-sync</artifactId>
-                <version>3.11.2</version>
+                <version>3.12.6</version>
             </dependency>
             <dependency>
                 <groupId>javax.json</groupId>
@@ -160,7 +160,7 @@
                 <version>0.8.5</version>
                 <executions>
                     <!-- Prepares the property pointing to the JaCoCo runtime 
-                        agent which is passed as VM argument when Maven the Surefire plugin is executed. -->
+                    agent which is passed as VM argument when Maven the Surefire plugin is executed. -->
                     <execution>
                         <id>pre-unit-test</id>
                         <goals>
