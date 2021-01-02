@@ -85,7 +85,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
-                <version>1.11.868</version>
+                <version>1.11.928</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -97,7 +97,7 @@
             <dependency>
                 <groupId>org.apache.tika</groupId>
                 <artifactId>tika-parsers</artifactId>
-                <version>1.24.1</version>
+                <version>1.25</version>
             </dependency>
             <dependency>
                 <groupId>org.ehcache</groupId>
