@@ -167,4 +167,64 @@ public class NodeMoveTest extends AbstractOvataRepositoryTest {
         
         session.commit();
     }
+    
+    @Test
+    public void testMoveNodeAndReadByIdTransient() throws Exception {
+        Repository repository = this.getRepositoryAsAdministrator();
+        Session session = repository.getSession( "test");
+
+        Node node = session.getRoot();
+        Node users = node.addNode( "users", CoreNodeTypes.UNSTRUCTURED);
+        Node roles = node.addNode( "roles", CoreNodeTypes.UNSTRUCTURED);
+        Node other = node.addNode( "other", CoreNodeTypes.UNSTRUCTURED);
+        Node dani = users.addNode( "dani", CoreNodeTypes.UNSTRUCTURED);
+        Node roman = users.addNode( "roman", CoreNodeTypes.UNSTRUCTURED);
+        Node timon = users.addNode( "timon", CoreNodeTypes.UNSTRUCTURED);
+        
+        String timonId = timon.getId();
+        
+        Assert.assertTrue( session.findNodeByPath( "/users/timon").isPresent());
+        
+        timon.moveTo( other);
+        
+        Node timon2 = session.getNodeByIdentifier( timonId);
+        
+        Assert.assertEquals( "other", timon2.getParent().getName());
+        
+        Assert.assertEquals( other, timon.getParent());
+        
+        session.commit();
+    }
+
+    @Test
+    public void testMoveNodeAndReadByIdPersistent() throws Exception {
+        Repository repository = this.getRepositoryAsAdministrator();
+        Session session = repository.getSession( "test");
+
+        Node node = session.getRoot();
+        Node users = node.addNode( "users", CoreNodeTypes.UNSTRUCTURED);
+        Node roles = node.addNode( "roles", CoreNodeTypes.UNSTRUCTURED);
+        Node other = node.addNode( "other", CoreNodeTypes.UNSTRUCTURED);
+        Node dani = users.addNode( "dani", CoreNodeTypes.UNSTRUCTURED);
+        Node roman = users.addNode( "roman", CoreNodeTypes.UNSTRUCTURED);
+        Node timon = users.addNode( "timon", CoreNodeTypes.UNSTRUCTURED);
+        
+        String timonId = timon.getId();
+
+        session.commit();
+        
+        Session session2 = repository.getSession( "test");
+        Node timon2 = session2.getNodeByPath( "/users/timon");
+        Node other2 = session2.getNodeByPath( "/other");
+        
+        Assert.assertTrue( session.findNodeByPath( "/users/timon").isPresent());
+        
+        timon2.moveTo( other2);
+        
+        session2.commit();
+        
+        Session session3 = repository.getSession( "test");
+        
+        Node timon3 = session3.getNodeByIdentifier( timonId);
+    }
 }

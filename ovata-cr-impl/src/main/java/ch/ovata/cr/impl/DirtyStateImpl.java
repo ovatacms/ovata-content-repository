@@ -344,7 +344,7 @@ public class DirtyStateImpl implements DirtyState {
             NodeImpl node = this.getNode();
 
             StoreDocument removeDocument = vf.newDocument()
-                                                .append( Node.NODE_ID_FIELD, new NodeId( node.getId(), revision).toDocument( vf.newDocument()))
+                                                .append( Node.NODE_ID_FIELD, new NodeId( node.getId(), revision - 1).toDocument( vf.newDocument()))
                                                 .append( Node.CREATE_TIME_FIELD, new Date())
                                                 .append( Node.REMOVED_FIELD, Boolean.TRUE)
                                                 .append( Node.PARENT_ID_FIELD, oldParent.getId())
@@ -352,7 +352,7 @@ public class DirtyStateImpl implements DirtyState {
 
             StoreDocument addDocument = this.getNode().getDocument();
             
-            addDocument.getDocument( Node.NODE_ID_FIELD).append( NodeId.REVISION_FIELD, revision - 1);
+            addDocument.getDocument( Node.NODE_ID_FIELD).append( NodeId.REVISION_FIELD, revision);
             
             return Arrays.asList( removeDocument, addDocument);
         }
