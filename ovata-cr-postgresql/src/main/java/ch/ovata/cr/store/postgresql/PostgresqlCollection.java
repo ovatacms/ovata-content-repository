@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.bson.Document;
+import org.bson.json.JsonMode;
+import org.bson.json.JsonWriterSettings;
 import org.postgresql.util.PGobject;
 
 /**
@@ -83,7 +85,7 @@ public class PostgresqlCollection implements StoreCollection {
 
     @Override
     public StoreDocument findById(String nodeId, long revision) {
-        String sql = SqlUtils.createStatement( "SELECT PAYLOAD, REMOVED FROM %s WHERE (NODE_ID = ?) AND (REVISION <= ?) ORDER BY REVISION DESC, REMOVED ASC LIMIT 1", getTableName());
+        String sql = SqlUtils.createStatement( "SELECT PAYLOAD, REMOVED FROM %s WHERE (NODE_ID = ?) AND (REVISION <= ?) ORDER BY REVISION DESC LIMIT 1", getTableName());
         
         try( Connection c = this.database.getDbConnection(); PreparedStatement stmt = c.prepareStatement( sql)) {
             stmt.setString( 1, nodeId);
@@ -107,7 +109,7 @@ public class PostgresqlCollection implements StoreCollection {
 
     @Override
     public StoreDocument findByParentIdAndName(String parentId, String name, long revision) {
-        String sql = SqlUtils.createStatement( "SELECT PAYLOAD FROM %s WHERE (PARENT_ID = ?) AND (NAME = ?) AND (REVISION <= ?) ORDER BY REVISION DESC, REMOVED ASC", getTableName());
+        String sql = SqlUtils.createStatement( "SELECT PAYLOAD, REMOVED FROM %s WHERE (PARENT_ID = ?) AND (NAME = ?) AND (REVISION <= ?) ORDER BY REVISION DESC LIMIT 1", getTableName());
         
         try( Connection c = this.database.getDbConnection(); PreparedStatement stmt = c.prepareStatement( sql)) {
             stmt.setString( 1, parentId);
@@ -115,7 +117,7 @@ public class PostgresqlCollection implements StoreCollection {
             stmt.setLong( 3, revision);
 
             try( ResultSet r = stmt.executeQuery()) {
-                if( r.next()) {
+                if( r.next() && !r.getBoolean( 2)) {
                     Document doc = Document.parse( r.getString( 1));
 
                     return new MongoDbDocument( doc);
@@ -132,7 +134,7 @@ public class PostgresqlCollection implements StoreCollection {
 
     @Override
     public StoreDocumentIterable findByParentId(String parentId, long revision) {
-        String sql = SqlUtils.createStatement( "SELECT PAYLOAD FROM %s WHERE (PARENT_ID = ?) AND (REVISION <= ?) ORDER BY NODE_ID ASC, REVISION DESC", getTableName());
+        String sql = String.format( "SELECT t.PAYLOAD, t.REMOVED FROM %s t INNER JOIN (SELECT NODE_ID, MAX(REVISION) as MREV FROM %s WHERE (PARENT_ID = ?) AND (REVISION <= ?) GROUP BY NODE_ID) s on t.NODE_ID = s.NODE_ID AND t.REVISION = s.MREV ORDER BY t.NODE_ID ASC", getTableName(), getTableName());
         
         try( Connection c = this.database.getDbConnection(); PreparedStatement stmt = c.prepareStatement( sql)) {
             stmt.setString( 1, parentId);
@@ -142,9 +144,11 @@ public class PostgresqlCollection implements StoreCollection {
                 List<StoreDocument> result = new ArrayList();
 
                 while( r.next()) {
-                    Document doc = Document.parse( r.getString( 1));
+                    if( !r.getBoolean( 2)) {
+                        Document doc = Document.parse( r.getString( 1));
 
-                    result.add( new MongoDbDocument( doc));
+                        result.add( new MongoDbDocument( doc));
+                    }
                 }
 
                 return new PostgresqlDocumentIterable( result);
@@ -165,15 +169,17 @@ public class PostgresqlCollection implements StoreCollection {
         return new MongoDbDocumentList();
     }
 
+    private static JsonWriterSettings JSON_SETTINGS = JsonWriterSettings.builder().outputMode(JsonMode.EXTENDED).build();
+    
     private void populateStatement(  PreparedStatement stmt, StoreDocument document) throws SQLException {
         stmt.setString( 1, document.getDocument( Node.NODE_ID_FIELD).getString( Node.UUID_FIELD));
         stmt.setLong( 2, document.getDocument( Node.NODE_ID_FIELD).getLong( Node.REVISION_FIELD));
         stmt.setString( 3, document.getString( Node.PARENT_ID_FIELD));
         stmt.setString( 4, document.getString( Node.NAME_FIELD));
         
-        PGobject jsonObject = new PGobject();        
+        PGobject jsonObject = new PGobject();
         jsonObject.setType("json");
-        jsonObject.setValue( ((MongoDbDocument)document).unwrap().toJson());
+        jsonObject.setValue(((MongoDbDocument)document).unwrap().toJson(JSON_SETTINGS));
         
         stmt.setObject( 5, jsonObject);
         

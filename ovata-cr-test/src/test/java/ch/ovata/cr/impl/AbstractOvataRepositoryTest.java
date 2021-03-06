@@ -68,12 +68,13 @@ public abstract class AbstractOvataRepositoryTest {
     
     @Before
     public void setUp() throws Exception {
+        try {
         System.setProperty( "org.slf4j.simpleLogger.defaultLogLevel", "info");
         System.setProperty( "org.slf4j.simpleLogger.log.ch.ovata.cr", "debug");
         // Choose implementation to test
         // ds = new RCMySql();
         // ds = new RCPostgresqlElastic();
-        // ds = new RCPostgresqlFS();
+//         ds = new RCPostgresqlFS();
          ds = new RCMongoDbS3();
 //        ds = new RCH2FS();
         
@@ -106,6 +107,10 @@ public abstract class AbstractOvataRepositoryTest {
         Repository repository = connection.create( TEST_REPO_NAME, TEST_DATABASE_USERNAME, TEST_DATABASE_PASSWORD);
         
         repository.createWorkspace( TEST_WORKSPACE_NAME);
+        }
+        catch( Exception e) {
+            e.printStackTrace();
+        }
     }
     
     private void dropDatabase( Connection c, String name) throws SQLException {
