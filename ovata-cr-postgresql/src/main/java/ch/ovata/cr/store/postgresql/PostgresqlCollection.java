@@ -134,7 +134,7 @@ public class PostgresqlCollection implements StoreCollection {
 
     @Override
     public StoreDocumentIterable findByParentId(String parentId, long revision) {
-        String sql = String.format( "SELECT t.PAYLOAD, t.REMOVED FROM %s t INNER JOIN (SELECT NODE_ID, MAX(REVISION) as MREV FROM %s WHERE (PARENT_ID = ?) AND (REVISION <= ?) GROUP BY NODE_ID) s on t.NODE_ID = s.NODE_ID AND t.REVISION = s.MREV ORDER BY t.NODE_ID ASC", getTableName(), getTableName());
+        String sql = String.format( "SELECT t.PAYLOAD FROM %s t INNER JOIN (SELECT NODE_ID, MAX(REVISION) as MREV FROM %s WHERE (PARENT_ID = ?) AND (REVISION <= ?) GROUP BY NODE_ID) s on t.NODE_ID = s.NODE_ID AND t.REVISION = s.MREV WHERE NOT t.REMOVED ORDER BY t.NODE_ID ASC", getTableName(), getTableName());
         
         try( Connection c = this.database.getDbConnection(); PreparedStatement stmt = c.prepareStatement( sql)) {
             stmt.setString( 1, parentId);
@@ -144,11 +144,9 @@ public class PostgresqlCollection implements StoreCollection {
                 List<StoreDocument> result = new ArrayList();
 
                 while( r.next()) {
-                    if( !r.getBoolean( 2)) {
-                        Document doc = Document.parse( r.getString( 1));
+                    Document doc = Document.parse( r.getString( 1));
 
-                        result.add( new MongoDbDocument( doc));
-                    }
+                    result.add( new MongoDbDocument( doc));
                 }
 
                 return new PostgresqlDocumentIterable( result);
