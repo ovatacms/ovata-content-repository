@@ -74,8 +74,8 @@ public abstract class AbstractOvataRepositoryTest {
         // Choose implementation to test
         // ds = new RCMySql();
         // ds = new RCPostgresqlElastic();
-//         ds = new RCPostgresqlFS();
-         ds = new RCMongoDbS3();
+         ds = new RCPostgresqlFS();
+//         ds = new RCMongoDbS3();
 //        ds = new RCH2FS();
         
         this.connection = ds.getConnection();

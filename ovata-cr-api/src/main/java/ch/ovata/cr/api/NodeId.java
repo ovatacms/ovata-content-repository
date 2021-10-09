@@ -66,13 +66,7 @@ public class NodeId implements Serializable {
     
     @Override
     public boolean equals( Object other) {
-        if( other instanceof NodeId) {
-            NodeId otherId = (NodeId)other;
-            
-            return (this.revision == otherId.revision) && this.uuid.equals( otherId.uuid);
-        }
-        
-        return false;
+        return (other instanceof NodeId o) && (this.revision == o.revision) && this.uuid.equals( o.uuid);
     }
 
     @Override

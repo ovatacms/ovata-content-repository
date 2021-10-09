@@ -677,11 +677,7 @@ public class NodeImpl implements Node {
     
     @Override
     public boolean equals( Object other) {
-        if( other instanceof NodeImpl) {
-            return this.nodeId.equals( ((NodeImpl)other).nodeId);
-        }
-        
-        return false;
+        return (other instanceof NodeImpl o) && this.nodeId.equals( o.nodeId);
     }
     
     @Override

@@ -27,8 +27,6 @@ import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.config.units.EntryUnit;
 import org.ehcache.config.units.MemoryUnit;
-import org.ehcache.core.statistics.CacheStatistics;
-import org.ehcache.core.statistics.DefaultStatisticsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +45,6 @@ public class CachingStoreCollectionWrapper implements StoreCollectionWrapper {
     private final StoreCollectionWrapper internal;
 
     private static final Cache<QueryKey, Serializable> cache;
-    private static final DefaultStatisticsService statistics = new DefaultStatisticsService();
     
     static {
         int onheapEntries = Integer.parseInt( System.getProperty( "ovatacr.onheap.cache.size", "512"));
@@ -55,7 +52,7 @@ public class CachingStoreCollectionWrapper implements StoreCollectionWrapper {
         
         ResourcePoolsBuilder rpb = ResourcePoolsBuilder.newResourcePoolsBuilder().heap( onheapEntries, EntryUnit.ENTRIES).offheap( offheapSize, MemoryUnit.MB);
         CacheConfigurationBuilder ccb = CacheConfigurationBuilder.newCacheConfigurationBuilder( QueryKey.class, Serializable.class, rpb).withValueSerializer( new FstSerializer()).withKeySerializer( new FstSerializer());        
-        CacheManager cm = CacheManagerBuilder.newCacheManagerBuilder().withCache( CACHE_NAME, ccb).using( statistics).build( true);
+        CacheManager cm = CacheManagerBuilder.newCacheManagerBuilder().withCache( CACHE_NAME, ccb).build( true);
 
         cache = cm.getCache( CACHE_NAME, QueryKey.class, Serializable.class);
     }
@@ -95,8 +92,6 @@ public class CachingStoreCollectionWrapper implements StoreCollectionWrapper {
     private <T> T fromCache( QueryKey key, Supplier<T> loader) {
         T result = (T)cache.get( key);
         
-        printStats();
-        
         if( result == null) {
             result = loader.get();
             
@@ -111,18 +106,6 @@ public class CachingStoreCollectionWrapper implements StoreCollectionWrapper {
         }
         else {
             return (result == NullMarker.EMPTY_RESULT) ? null : result;
-        }
-    }
-
-    private static long counter = 0;
-    
-    private void printStats() {
-        counter++;
-        
-        if( counter % 10000 == 0) {
-            CacheStatistics stats = statistics.getCacheStatistics( CACHE_NAME);
-        
-            logger.info( "Cache hit ratio : {}%, {}/{}.", stats.getCacheHitPercentage(), stats.getCacheHits(), stats.getCacheGets());
         }
     }
    
