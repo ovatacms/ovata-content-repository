@@ -376,7 +376,7 @@ public class SessionImpl implements Session {
     }
     
     private NodeImpl createNewNode( NodeImpl parent, String name, String type) {
-        NodeId nodeId = new NodeId( this.getRevision());
+        NodeId nodeId = new NodeId( this.getRevision(), 0l);
         StoreDocument document = this.getValueFactory().newDocument()   
                                                             .append( Node.NODE_ID_FIELD, nodeId.toDocument( this.getValueFactory().newDocument()))
                                                             .append( Node.CREATE_TIME_FIELD, new Date())

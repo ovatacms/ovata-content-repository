@@ -75,7 +75,7 @@ public class MongoDbSearchProvider implements SearchProvider {
         
         for( Document doc : docs) {
             Document docid = doc.get( Node.NODE_ID_FIELD, Document.class);
-            NodeId id = new NodeId( docid.getString( Node.UUID_FIELD), docid.getLong( Node.REVISION_FIELD));
+            NodeId id = new NodeId( docid.getString( Node.UUID_FIELD), docid.getLong( Node.REVISION_FIELD), docid.getLong( Node.STEP_FIELD));
             NodeId prevId = ids.get( id.getUUID());
             
             if( (prevId == null) || (prevId.getRevision() < id.getRevision()) ) {

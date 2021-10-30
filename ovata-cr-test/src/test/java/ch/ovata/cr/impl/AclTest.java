@@ -82,6 +82,7 @@ public class AclTest {
         
         rawId.append( "uuid", UUID.randomUUID().toString());
         rawId.append( "revision", 0l);
+        rawId.append( "step", 0l);
         
         rawNode.append( NodeImpl.NODE_ID_FIELD, rawId);
         rawNode.append( NodeImpl.POLICY_FIELD, rawPolicy);

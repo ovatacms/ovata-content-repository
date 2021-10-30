@@ -14,7 +14,6 @@
 package ch.ovata.cr.store.postgresql;
 
 import ch.ovata.cr.api.RepositoryException;
-import ch.ovata.cr.spi.store.ConcurrencyControlFactory;
 import ch.ovata.cr.spi.store.StoreCollection;
 import ch.ovata.cr.spi.store.StoreDatabase;
 import ch.ovata.cr.spi.store.StoreDocument;
@@ -41,11 +40,11 @@ public class PostgresqlDatabase implements StoreDatabase {
     private final TransactionManager transactionManager;
     private final String databaseName;
     
-    public PostgresqlDatabase( PostgresqlConnection connection, BlobStore blobStore, ConcurrencyControlFactory cfactory, String databaseName) {
+    public PostgresqlDatabase( PostgresqlConnection connection, BlobStore blobStore, String databaseName) {
         this.databaseName = databaseName;
         this.connection = connection;
         this.blobStore = blobStore;
-        this.transactionManager = new PostgresqlTrxManager( this, cfactory);
+        this.transactionManager = new PostgresqlTrxManager( this);
     }
     
     @Override

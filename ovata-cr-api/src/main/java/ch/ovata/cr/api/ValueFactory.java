@@ -50,7 +50,6 @@ public interface ValueFactory {
      * Creates an new value from as String
      * @param value the string value
      * @return the new value object
-     * @throws NullPointerException if value is null
      */
     Value of( String value);
     
@@ -58,7 +57,6 @@ public interface ValueFactory {
      * Creates a new value from a LocalDate
      * @param value the LocalDate value
      * @return the new value object
-     * @throws NullPointerException if value is null
      */
     Value of( LocalDate value);
     
@@ -66,7 +64,6 @@ public interface ValueFactory {
      * Creates a new value from a ZonedDateTime
      * @param value the ZonedDateTime value
      * @return the new value object
-     * @throws NullPointerException if value is null
      */
     Value of( ZonedDateTime value);
     
@@ -88,7 +85,6 @@ public interface ValueFactory {
      * Creates a new value from a BigDecimal
      * @param value the BigDecimal value
      * @return the new value object
-     * @throws NullPointerException if value is null
      */
     Value of( BigDecimal value);
     
@@ -103,7 +99,6 @@ public interface ValueFactory {
      * Creates an array of values
      * @param array the array of values to assign
      * @return the new value object
-     * @throws NullPointerException if array is null
      */    
     Value of( Collection<Value> array);
 
@@ -111,7 +106,6 @@ public interface ValueFactory {
      * Creates a map of values
      * @param map the map of values to assign
      * @return the new value object
-     * @throws NullPointerException if map is null
      */
     Value of( Map<String, Value> map);
     
@@ -121,7 +115,6 @@ public interface ValueFactory {
      * @param filename the filename
      * @param contentType the content type
      * @return the new value object
-     * @throws NullPointerException if in is null
      */
     Value binary( InputStream in, String filename, String contentType);
     
@@ -132,7 +125,6 @@ public interface ValueFactory {
      * @param filename the filename
      * @param contentType the content type
      * @return the new value object
-     * @throws NullPointerException if in is null
      */
     Value binary( InputStream in, long contentLength, String filename, String contentType);
     
@@ -142,7 +134,6 @@ public interface ValueFactory {
      * @param filename the filename to assign
      * @param contentType the content type
      * @return the new value object
-     * @throws NullPointerException if bytes is null
      */
     Value binary( byte[] bytes, String filename, String contentType);
     
@@ -151,7 +142,6 @@ public interface ValueFactory {
      * @param workspaceName the name of the workspace to reference
      * @param path the path to the node to reference
      * @return the new value object
-     * @throws NullPointerException if workspaceName or path is null
      */
     Value referenceByPath( String workspaceName, String path);
     
@@ -160,7 +150,6 @@ public interface ValueFactory {
      * @param workspaceName the name of the workspace to reference
      * @param nodeId the id of the node to reference
      * @return the new value object
-     * @throws NullPointerException if workspaceName or nodeId is null
      */
     Value referenceById( String workspaceName, String nodeId);
 }

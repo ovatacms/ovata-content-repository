@@ -17,7 +17,6 @@ import ch.ovata.cr.api.RepositoryConnection;
 import ch.ovata.cr.api.RepositoryConnectionDataSource;
 import ch.ovata.cr.store.postgresql.PostgresqlBlobStoreFactory;
 import ch.ovata.cr.store.postgresql.PostgresqlConnection;
-import ch.ovata.cr.store.postgresql.concurrency.PostgresqlConcurrencyControlFactory;
 import ch.ovata.cr.store.postgresql.search.PostgresqlSearchProviderFactory;
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -38,9 +37,8 @@ public class RCPostgresqlFS implements RepositoryConnectionDataSource {
         dataSource.setInitialSize( 5);
         dataSource.setDefaultAutoCommit( false);
         
-        PostgresqlConcurrencyControlFactory ccf = new PostgresqlConcurrencyControlFactory( dataSource);
         PostgresqlBlobStoreFactory bsf = new PostgresqlBlobStoreFactory( dataSource);
-        PostgresqlConnection connection = new PostgresqlConnection( dataSource, bsf, ccf);
+        PostgresqlConnection connection = new PostgresqlConnection( dataSource, bsf);
         PostgresqlSearchProviderFactory spf = new PostgresqlSearchProviderFactory();
 //        ElasticSearchProviderFactory spf = new ElasticSearchProviderFactory( bsf, "https://e2c3b0ad5192fec499800cdefbd80393.eu-west-1.aws.found.io:9243", "elastic:7uGyeNax0a2nrDuwW1IDANUo");
         

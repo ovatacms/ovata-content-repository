@@ -13,7 +13,6 @@
  */
 package ch.ovata.cr.store.mongodb;
 
-import ch.ovata.cr.spi.store.ConcurrencyControlFactory;
 import ch.ovata.cr.spi.store.StoreConnection;
 import ch.ovata.cr.spi.store.StoreDatabase;
 import ch.ovata.cr.spi.store.blob.BlobStoreFactory;
@@ -30,14 +29,12 @@ public class MongoDbConnection implements StoreConnection {
 
     private final MongoClient mongoClient;
     private final BlobStoreFactory blobStoreFactory;
-    private final ConcurrencyControlFactory ccontrolFactory;
     
     private final Map<String, StoreDatabase> databases = new ConcurrentHashMap<>();
     
-    public MongoDbConnection( MongoClient client, BlobStoreFactory blobStoreFactory, ConcurrencyControlFactory ccontrolFactory) {
+    public MongoDbConnection( MongoClient client, BlobStoreFactory blobStoreFactory) {
         this.mongoClient = client;
         this.blobStoreFactory = blobStoreFactory;
-        this.ccontrolFactory = ccontrolFactory;
     }
     
     @Override
@@ -52,13 +49,7 @@ public class MongoDbConnection implements StoreConnection {
             return (T)this.mongoClient;
         }
         
-        T object = ccontrolFactory.unwrap( c);
-        
-        if( object == null) {
-            object = blobStoreFactory.unwrap( c);
-        }
-        
-        return object;
+        return blobStoreFactory.unwrap( c);
     }
     
     public MongoClient unwrap() {
@@ -67,7 +58,7 @@ public class MongoDbConnection implements StoreConnection {
     
     @Override
     public StoreDatabase getDatabase(String name) {
-        return this.databases.computeIfAbsent( name, key -> new  MongoDbDatabase( mongoClient, mongoClient.getDatabase( key), blobStoreFactory.createBlobStore( key), ccontrolFactory));
+        return this.databases.computeIfAbsent( name, key -> new  MongoDbDatabase( mongoClient, mongoClient.getDatabase( key), blobStoreFactory.createBlobStore( key)));
     }
     
     @Override
@@ -91,7 +82,6 @@ public class MongoDbConnection implements StoreConnection {
     @Override
     public void shutdown() {
         this.databases.clear();
-        this.ccontrolFactory.shutdown();
         this.blobStoreFactory.shutdown();
     }
 }

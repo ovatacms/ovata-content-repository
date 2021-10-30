@@ -11,7 +11,7 @@
  * it only in accordance with the terms of the license agreement
  * you entered into with Ovata GmbH.
  */
-package ch.ovata.cr.impl.concurrency;
+package ch.ovata.cr.impl;
 
 import ch.ovata.cr.api.LockInfo;
 import ch.ovata.cr.api.Node;

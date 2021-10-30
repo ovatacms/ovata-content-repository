@@ -34,7 +34,8 @@ public interface Node extends Item {
     String ROOT_ID = "CAFEBABE-CAFE-BABE-CAFE-BABECAFEBABE";
     String UUID_FIELD = "uuid";
     String REVISION_FIELD = "revision";
-    String NODE_ID_FIELD = "_id";
+    String STEP_FIELD = "step";
+    String NODE_ID_FIELD = "@id";
     String PARENT_ID_FIELD = "@Parent";
     String NAME_FIELD = "@Name";
     String CREATE_TIME_FIELD = "@CreateTime";
@@ -206,11 +207,10 @@ public interface Node extends Item {
     Property getProperty( String name);
     
     /**
-     * Sets a property
+     * Sets a property. If the value is null, the property is removed.
      * @param name the name of the property
      * @param value the value of the property
      * @return the new property
-     * @throws NullPointerException if value is null
      */
     Property setProperty( String name, Value value);
     
@@ -351,7 +351,6 @@ public interface Node extends Item {
      * @return information about the lock or empty optional if not locked
      */
     Optional<LockInfo> getLockInfo();
-
 
     static Pattern NAME_PATTERN = Pattern.compile( "[A-Za-z0-9\\@\\$][ A-Za-z0-9\\!\\@\\$\\^\\&\\(\\)\\'\\;\\{\\}\\[\\]\\=\\+\\-\\_\\~\\`\\.]*");
     

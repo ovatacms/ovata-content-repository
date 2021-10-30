@@ -50,7 +50,7 @@ public class PostgresqlCollection implements StoreCollection {
     
     @Override
     public void init( StoreDocument document) {
-        String sql = SqlUtils.createStatement( "INSERT INTO %s (NODE_ID, REVISION, PARENT_ID, NAME, PAYLOAD, REMOVED) VALUES (?,?,?,?,?,?)", getTableName());
+        String sql = SqlUtils.createStatement( "INSERT INTO %s (NODE_ID, REVISION, STEP, PARENT_ID, NAME, PAYLOAD, REMOVED) VALUES (?,?,?,?,?,?,?)", getTableName());
         
         try( Connection c = this.database.getDbConnection(); PreparedStatement stmt = c.prepareStatement( sql)) {
             populateStatement(stmt, document);
@@ -67,7 +67,7 @@ public class PostgresqlCollection implements StoreCollection {
     @Override
     public void insertMany( Transaction trx, Collection<StoreDocument> documents) {
         Connection c = ((PostgresqlTransaction)trx).getConnection();
-        String sql = SqlUtils.createStatement( "INSERT INTO %s (NODE_ID, REVISION, PARENT_ID, NAME, PAYLOAD, REMOVED) VALUES (?,?,?,?,?,?)", getTableName());
+        String sql = SqlUtils.createStatement( "INSERT INTO %s (NODE_ID, REVISION, STEP, PARENT_ID, NAME, PAYLOAD, REMOVED) VALUES (?,?,?,?,?,?,?)", getTableName());
         
         try( PreparedStatement stmt = c.prepareStatement( sql)) {
             for( StoreDocument doc : documents) {
@@ -172,20 +172,21 @@ public class PostgresqlCollection implements StoreCollection {
     private void populateStatement(  PreparedStatement stmt, StoreDocument document) throws SQLException {
         stmt.setString( 1, document.getDocument( Node.NODE_ID_FIELD).getString( Node.UUID_FIELD));
         stmt.setLong( 2, document.getDocument( Node.NODE_ID_FIELD).getLong( Node.REVISION_FIELD));
-        stmt.setString( 3, document.getString( Node.PARENT_ID_FIELD));
-        stmt.setString( 4, document.getString( Node.NAME_FIELD));
+        stmt.setLong( 3, document.getDocument( Node.NODE_ID_FIELD).getLong( Node.STEP_FIELD));
+        stmt.setString( 4, document.getString( Node.PARENT_ID_FIELD));
+        stmt.setString( 5, document.getString( Node.NAME_FIELD));
         
         PGobject jsonObject = new PGobject();
         jsonObject.setType("json");
         jsonObject.setValue(((MongoDbDocument)document).unwrap().toJson(JSON_SETTINGS));
         
-        stmt.setObject( 5, jsonObject);
+        stmt.setObject( 6, jsonObject);
         
         if( document.containsKey( Node.REMOVED_FIELD)) {
-            stmt.setBoolean( 6, document.getBoolean( Node.REMOVED_FIELD));
+            stmt.setBoolean( 7, document.getBoolean( Node.REMOVED_FIELD));
         }
         else {
-            stmt.setBoolean( 6, false);
+            stmt.setBoolean( 7, false);
         }
     }
     

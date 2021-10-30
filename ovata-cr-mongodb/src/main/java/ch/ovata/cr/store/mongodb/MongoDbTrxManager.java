@@ -19,7 +19,6 @@ import ch.ovata.cr.api.Session;
 import ch.ovata.cr.api.TrxCallback;
 import ch.ovata.cr.impl.SessionImpl;
 import ch.ovata.cr.impl.WorkspaceImpl;
-import ch.ovata.cr.spi.store.ConcurrencyControlFactory;
 import ch.ovata.cr.spi.store.Transaction;
 import com.mongodb.ReadConcern;
 import com.mongodb.ReadPreference;
@@ -45,8 +44,8 @@ public class MongoDbTrxManager extends AbstractTrxManager {
     public static final String TRANSACTIONS_COLLECTION = "system_transactions";
     public static final Logger logger = LoggerFactory.getLogger( MongoDbTrxManager.class);
     
-    public MongoDbTrxManager( MongoDbDatabase database, ConcurrencyControlFactory ccontrolfactory) {
-        super( database, ccontrolfactory, () -> MongoDbTrxManager.getLatestRevision( database, TRANSACTIONS_COLLECTION));
+    public MongoDbTrxManager( MongoDbDatabase database) {
+        super( database, () -> MongoDbTrxManager.getLatestRevision( database, TRANSACTIONS_COLLECTION));
         
         createTransactionsCollection( database);
     }
@@ -59,7 +58,7 @@ public class MongoDbTrxManager extends AbstractTrxManager {
     
     @Override
     public long currentRevision() {
-        return ccontrol.currentRevision();
+        throw new UnsupportedOperationException( "Not Implemented.");
     }
     
     @Override
@@ -75,52 +74,54 @@ public class MongoDbTrxManager extends AbstractTrxManager {
     
     @Override
     public Transaction commit( Session session, String message, Optional<TrxCallback> callback) {
-        try {
-            if( this.ccontrol.acquireLock()) {
-                try {
-                    MongoDbTransaction trx = createTransaction( session, message);
-
-                    checkForConflicts( trx);
-            
-                    TransactionOptions txnOptions = TransactionOptions.builder().readPreference( ReadPreference.primary())
-                                                                                .readConcern( ReadConcern.LOCAL)
-                                                                                .writeConcern( WriteConcern.MAJORITY).build();        
-
-                    try( ClientSession cs = this.getDatabase().getClient().startSession()) {
-                        cs.withTransaction( () -> {
-                            trx.setMongoDbClientSession( cs);
-                            trx.markCommitted();
-
-                            ((WorkspaceImpl)trx.getSession().getWorkspace()).appendChanges( trx);
-                            getTransactionCollection().insertOne( cs, trx.toDocument());
-
-                            callback.ifPresent( c -> c.doWork( trx));
-                            
-                            return "";
-                        }, txnOptions);
-                    }
-                    
-                    return trx;
-                }
-                finally {
-                    this.ccontrol.releaseLock();
-                }
-            }
-            else {
-                throw new RepositoryException( "Could not acquire repository lock when starting a transaction.");
-            }
-        }
-        catch( InterruptedException e) {
-            logger.warn( "Thread was interrupted during the start of a transaction.", e);
-            
-            throw new RepositoryException( "Could not acquire repository lock.", e);
-        }
+        throw new UnsupportedOperationException( "Not implemented.");
+//        try {
+//            if( this.ccontrol.acquireLock()) {
+//                try {
+//                    MongoDbTransaction trx = createTransaction( session, message);
+//
+//                    checkForConflicts( trx);
+//            
+//                    TransactionOptions txnOptions = TransactionOptions.builder().readPreference( ReadPreference.primary())
+//                                                                                .readConcern( ReadConcern.LOCAL)
+//                                                                                .writeConcern( WriteConcern.MAJORITY).build();        
+//
+//                    try( ClientSession cs = this.getDatabase().getClient().startSession()) {
+//                        cs.withTransaction( () -> {
+//                            trx.setMongoDbClientSession( cs);
+//                            trx.markCommitted();
+//
+//                            ((WorkspaceImpl)trx.getSession().getWorkspace()).appendChanges( trx);
+//                            getTransactionCollection().insertOne( cs, trx.toDocument());
+//
+//                            callback.ifPresent( c -> c.doWork( trx));
+//                            
+//                            return "";
+//                        }, txnOptions);
+//                    }
+//                    
+//                    return trx;
+//                }
+//                finally {
+//                    this.ccontrol.releaseLock();
+//                }
+//            }
+//            else {
+//                throw new RepositoryException( "Could not acquire repository lock when starting a transaction.");
+//            }
+//        }
+//        catch( InterruptedException e) {
+//            logger.warn( "Thread was interrupted during the start of a transaction.", e);
+//            
+//            throw new RepositoryException( "Could not acquire repository lock.", e);
+//        }
     }
     
     private MongoDbTransaction createTransaction( Session session, String message) {
-        long nextRevision = this.ccontrol.nextRevision();
-
-        return new MongoDbTransaction( (SessionImpl)session, nextRevision, message);
+//        long nextRevision = this.ccontrol.nextRevision();
+//
+//        return new MongoDbTransaction( (SessionImpl)session, nextRevision, message);
+        return null;
     }
 
     @Override
@@ -131,7 +132,7 @@ public class MongoDbTrxManager extends AbstractTrxManager {
         collection.revertTo( trx.getRevision());
         this.getDatabase().getTransactionsTable( TRANSACTIONS_COLLECTION).deleteMany( filter);
         
-        this.ccontrol.signalClearCache();
+//        this.ccontrol.signalClearCache();
     }
     
     @Override
@@ -148,7 +149,7 @@ public class MongoDbTrxManager extends AbstractTrxManager {
         
         this.getDatabase().getTransactionsTable( TRANSACTIONS_COLLECTION).deleteMany( new Document( MongoDbTransaction.WORKSPACENAME_FIELD, workspaceName).append( MongoDbTransaction.REVISION_FIELD, new Document( "$lte", revisionLimit)));
         
-        this.ccontrol.signalClearCache();
+//        this.ccontrol.signalClearCache();
     }
     
     private  MongoCollection<Document> getTransactionCollection() {

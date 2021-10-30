@@ -14,7 +14,6 @@
 package ch.ovata.cr.store.postgresql;
 
 import ch.ovata.cr.api.RepositoryException;
-import ch.ovata.cr.spi.store.ConcurrencyControlFactory;
 import ch.ovata.cr.spi.store.StoreConnection;
 import ch.ovata.cr.spi.store.StoreDatabase;
 import ch.ovata.cr.spi.store.blob.BlobStoreFactory;
@@ -33,14 +32,12 @@ public class PostgresqlConnection implements StoreConnection {
 
     private final DataSource ds;
     private final BlobStoreFactory blobStoreFactory;
-    private final ConcurrencyControlFactory concurrencyControlFactory;
 
     private final Map<String, PostgresqlDatabase> databases = new ConcurrentHashMap<>();
     
-    public PostgresqlConnection( DataSource ds, BlobStoreFactory blobStoreFactory, ConcurrencyControlFactory concurrencyControlFactory) {
+    public PostgresqlConnection( DataSource ds, BlobStoreFactory blobStoreFactory) {
         this.ds = ds;
         this.blobStoreFactory = blobStoreFactory;
-        this.concurrencyControlFactory = concurrencyControlFactory;
     }
 
     DataSource getDataSource() {
@@ -57,7 +54,7 @@ public class PostgresqlConnection implements StoreConnection {
         PostgresqlDatabase database = this.databases.get( name);
         
         if( database == null) {
-            database = new PostgresqlDatabase(this, this.blobStoreFactory.createBlobStore( name), this.concurrencyControlFactory, name);
+            database = new PostgresqlDatabase(this, this.blobStoreFactory.createBlobStore( name), name);
 
             this.databases.put( name, database);
         }
@@ -102,19 +99,12 @@ public class PostgresqlConnection implements StoreConnection {
             return (T)this.ds;
         }
         
-        T object = concurrencyControlFactory.unwrap( c);
-        
-        if( object == null) {
-            object = blobStoreFactory.unwrap( c);
-        }
-        
-        return object;
+        return blobStoreFactory.unwrap( c);
     }
 
     @Override
     public void shutdown() {
         this.databases.clear();
-        this.concurrencyControlFactory.shutdown();
         this.blobStoreFactory.shutdown();
     }
 }

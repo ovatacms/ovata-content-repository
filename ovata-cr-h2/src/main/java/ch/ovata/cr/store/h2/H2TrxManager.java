@@ -20,7 +20,6 @@ import ch.ovata.cr.api.TrxCallback;
 import ch.ovata.cr.impl.AbstractTrxManager;
 import ch.ovata.cr.impl.SessionImpl;
 import ch.ovata.cr.impl.WorkspaceImpl;
-import ch.ovata.cr.spi.store.ConcurrencyControlFactory;
 import ch.ovata.cr.spi.store.Transaction;
 import java.io.StringReader;
 import java.sql.Connection;
@@ -50,8 +49,8 @@ public class H2TrxManager extends AbstractTrxManager {
     public static final String TRANSACTIONS_TABLE = "system_transactions";
     private static final Lock databaseLock = new ReentrantLock();
     
-    public H2TrxManager( H2Database database, ConcurrencyControlFactory ccontrolfactory) {
-        super( database, ccontrolfactory, () -> 0);
+    public H2TrxManager( H2Database database) {
+        super( database, () -> 0);
         
         createTransactionsTable();
     }

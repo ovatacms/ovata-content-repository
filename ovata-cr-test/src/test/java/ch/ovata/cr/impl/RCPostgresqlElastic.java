@@ -17,12 +17,10 @@ import ch.ovata.cr.api.RepositoryConnection;
 import ch.ovata.cr.api.RepositoryConnectionDataSource;
 import ch.ovata.cr.elastic.ElasticSearchProviderFactory;
 import ch.ovata.cr.spi.search.SearchProviderFactory;
-import ch.ovata.cr.spi.store.ConcurrencyControlFactory;
 import ch.ovata.cr.spi.store.StoreConnection;
 import ch.ovata.cr.spi.store.blob.BlobStoreFactory;
 import ch.ovata.cr.store.postgresql.PostgresqlBlobStoreFactory;
 import ch.ovata.cr.store.postgresql.PostgresqlConnection;
-import ch.ovata.cr.store.postgresql.concurrency.PostgresqlConcurrencyControlFactory;
 import java.sql.SQLException;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
@@ -47,9 +45,8 @@ public class RCPostgresqlElastic implements RepositoryConnectionDataSource {
         dataSource.setInitialSize( 5);
         dataSource.setDefaultAutoCommit( false);
         
-        ConcurrencyControlFactory ccf = new PostgresqlConcurrencyControlFactory( dataSource);
         BlobStoreFactory bsf = new PostgresqlBlobStoreFactory( dataSource);
-        StoreConnection connection = new PostgresqlConnection( dataSource, bsf, ccf);
+        StoreConnection connection = new PostgresqlConnection( dataSource, bsf);
         SearchProviderFactory spf = new ElasticSearchProviderFactory( bsf, "http://localhost:9200", "");
         
         return new RepositoryConnectionImpl( connection, spf);

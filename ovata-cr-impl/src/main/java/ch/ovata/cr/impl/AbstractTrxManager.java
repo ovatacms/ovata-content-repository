@@ -16,8 +16,6 @@ package ch.ovata.cr.impl;
 import ch.ovata.cr.api.LockInfo;
 import ch.ovata.cr.api.Node;
 import ch.ovata.cr.api.OptimisticLockingException;
-import ch.ovata.cr.spi.store.ConcurrencyControl;
-import ch.ovata.cr.spi.store.ConcurrencyControlFactory;
 import ch.ovata.cr.spi.store.StoreDatabase;
 import ch.ovata.cr.spi.store.Transaction;
 import ch.ovata.cr.spi.store.TransactionManager;
@@ -41,44 +39,34 @@ public abstract class AbstractTrxManager implements TransactionManager {
     private static final Logger logger = LoggerFactory.getLogger( AbstractTrxManager.class);
     
     protected final StoreDatabase database;
-    protected ConcurrencyControl ccontrol = null;
     
-    protected AbstractTrxManager( StoreDatabase database, ConcurrencyControlFactory ccontrolfactory, LongSupplier latestTrx) {
+    protected AbstractTrxManager( StoreDatabase database, LongSupplier latestTrx) {
         this.database = database;
-
-        try {        
-            this.ccontrol = ccontrolfactory.setupRepository( this.database.getName(), latestTrx);
-        }
-        catch( InterruptedException e) {
-            logger.warn( "Thread was interrupted during the setup of the concurrency control factory.", e);
-            
-            Thread.currentThread().interrupt();
-        }
     }
 
     @Override
     public void lockNode(Node node) {
-        this.ccontrol.lockNode(node);
+        throw new UnsupportedOperationException( "Not implemented.");
     }
 
     @Override
     public void releaseNodeLock(Node node) {
-        this.ccontrol.releaseNodeLock(node);
+        throw new UnsupportedOperationException( "Not implemented.");
     }
 
     @Override
     public Optional<LockInfo> getLockInfo(Node node) {
-        return this.ccontrol.getNodeLockInfo(node);
+        throw new UnsupportedOperationException( "Not implemented.");
     }
 
     @Override
     public void breakNodeLock(Node node) {
-        this.ccontrol.breakNodeLock(node);
+        throw new UnsupportedOperationException( "Not implemented.");
     }
 
     @Override
     public void signalClearCache() {
-        this.ccontrol.signalClearCache();
+        throw new UnsupportedOperationException( "Not implemented.");
     }
 
     protected void checkForConflicts( Transaction currentTrx) {

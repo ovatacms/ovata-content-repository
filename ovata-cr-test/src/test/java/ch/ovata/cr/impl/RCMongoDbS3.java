@@ -15,9 +15,7 @@ package ch.ovata.cr.impl;
 
 import ch.ovata.cr.api.RepositoryConnection;
 import ch.ovata.cr.api.RepositoryConnectionDataSource;
-import ch.ovata.cr.impl.concurrency.LocalConcurrencyControlFactory;
 import ch.ovata.cr.spi.search.SearchProviderFactory;
-import ch.ovata.cr.spi.store.ConcurrencyControlFactory;
 import ch.ovata.cr.spi.store.blob.BlobStoreFactory;
 import ch.ovata.cr.store.aws.S3BlobStoreFactory;
 import ch.ovata.cr.store.mongodb.MongoDbConnection;
@@ -44,8 +42,7 @@ public class RCMongoDbS3 implements RepositoryConnectionDataSource {
     public RepositoryConnection getConnection() {
         MongoClient mongodb = MongoClients.create( mongouri);
         BlobStoreFactory blobStoreFactory = new S3BlobStoreFactory( Regions.fromName( region), bucketName);
-        ConcurrencyControlFactory ccontrol = new LocalConcurrencyControlFactory();
-        MongoDbConnection mongoConnection = new MongoDbConnection(mongodb, blobStoreFactory, ccontrol);
+        MongoDbConnection mongoConnection = new MongoDbConnection(mongodb, blobStoreFactory);
         
         SearchProviderFactory searchProviderFactory = new MongoDbFulltextSearchProviderFactory( blobStoreFactory, mongoConnection);
         

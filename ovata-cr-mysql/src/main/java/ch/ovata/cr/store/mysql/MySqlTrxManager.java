@@ -13,14 +13,11 @@
  */
 package ch.ovata.cr.store.mysql;
 
-import ch.ovata.cr.api.OptimisticLockingException;
 import ch.ovata.cr.api.RepositoryException;
 import ch.ovata.cr.api.Session;
 import ch.ovata.cr.api.TrxCallback;
 import ch.ovata.cr.impl.AbstractTrxManager;
 import ch.ovata.cr.impl.SessionImpl;
-import ch.ovata.cr.impl.WorkspaceImpl;
-import ch.ovata.cr.spi.store.ConcurrencyControlFactory;
 import ch.ovata.cr.spi.store.Transaction;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,8 +41,8 @@ public class MySqlTrxManager extends AbstractTrxManager {
     
     public static final String TRANSACTIONS_TABLE = "system_transactions";
     
-    public MySqlTrxManager( MySqlDatabase database, ConcurrencyControlFactory ccontrolfactory) {
-        super( database, ccontrolfactory, () -> 0);
+    public MySqlTrxManager( MySqlDatabase database) {
+        super( database, () -> 0);
         
         createTransactionsTable( database);
     }
@@ -108,55 +105,56 @@ public class MySqlTrxManager extends AbstractTrxManager {
     
     @Override
     public Transaction commit( Session session, String message, Optional<TrxCallback> callback) {
-        try {
-            if( this.ccontrol.acquireLock()) {
-                try( Connection connection = ((MySqlDatabase)this.database).getDbConnection()) {
-                    // This resets all pending stuff and ensures, we see latest data
-                    connection.rollback();
-
-                    try {
-                        MySqlTransaction trx = createTransaction( connection, session, message);
-
-                        checkForConflicts( trx);
-                        
-                        trx.markCommitted();
-
-                        ((WorkspaceImpl)trx.getSession().getWorkspace()).appendChanges( trx);
-                        insertTrx( trx);
-
-                        callback.ifPresent( c -> c.doWork( trx));
-
-                        connection.commit();
-
-                        return trx;
-                    }
-                    catch( OptimisticLockingException e) {
-                        connection.rollback();
-                        
-                        throw e;
-                    }
-                    catch( SQLException | RuntimeException e) {
-                        connection.rollback();
-                        
-                        throw new RepositoryException( "Could not persist changes.", e);
-                    }
-                }
-                catch( SQLException e) {
-                    throw new RepositoryException( "Could not acquire database connection.", e);
-                }
-                finally {
-                    this.ccontrol.releaseLock();
-                }
-            }
-            else {
-                throw new RepositoryException( "Could not acquire repository lock when starting a transaction.");
-            }
-        }
-        catch( InterruptedException e) {
-            logger.warn( "Thread was interrupted during the start of a transaction.", e);
-            
-            throw new RepositoryException( "Could not acquire repository lock.", e);
-        }
+        return null;
+//        try {
+//            if( this.ccontrol.acquireLock()) {
+//                try( Connection connection = ((MySqlDatabase)this.database).getDbConnection()) {
+//                    // This resets all pending stuff and ensures, we see latest data
+//                    connection.rollback();
+//
+//                    try {
+//                        MySqlTransaction trx = createTransaction( connection, session, message);
+//
+//                        checkForConflicts( trx);
+//                        
+//                        trx.markCommitted();
+//
+//                        ((WorkspaceImpl)trx.getSession().getWorkspace()).appendChanges( trx);
+//                        insertTrx( trx);
+//
+//                        callback.ifPresent( c -> c.doWork( trx));
+//
+//                        connection.commit();
+//
+//                        return trx;
+//                    }
+//                    catch( OptimisticLockingException e) {
+//                        connection.rollback();
+//                        
+//                        throw e;
+//                    }
+//                    catch( SQLException | RuntimeException e) {
+//                        connection.rollback();
+//                        
+//                        throw new RepositoryException( "Could not persist changes.", e);
+//                    }
+//                }
+//                catch( SQLException e) {
+//                    throw new RepositoryException( "Could not acquire database connection.", e);
+//                }
+//                finally {
+//                    this.ccontrol.releaseLock();
+//                }
+//            }
+//            else {
+//                throw new RepositoryException( "Could not acquire repository lock when starting a transaction.");
+//            }
+//        }
+//        catch( InterruptedException e) {
+//            logger.warn( "Thread was interrupted during the start of a transaction.", e);
+//            
+//            throw new RepositoryException( "Could not acquire repository lock.", e);
+//        }
     }
     
     private void insertTrx( MySqlTransaction trx) throws SQLException {

@@ -18,7 +18,6 @@ import ch.ovata.cr.bson.MongoDbDocumentList;
 import ch.ovata.cr.api.Node;
 import ch.ovata.cr.api.NodeId;
 import ch.ovata.cr.spi.store.blob.BlobStore;
-import ch.ovata.cr.spi.store.ConcurrencyControlFactory;
 import ch.ovata.cr.spi.store.StoreCollection;
 import ch.ovata.cr.spi.store.StoreDatabase;
 import ch.ovata.cr.spi.store.StoreDocument;
@@ -50,10 +49,10 @@ public class MongoDbDatabase implements StoreDatabase {
     private final TransactionManager trxMgr;
     private final BlobStore blobStore;
     
-    public MongoDbDatabase( MongoClient client, MongoDatabase database, BlobStore blobStore, ConcurrencyControlFactory ccontrol) {
+    public MongoDbDatabase( MongoClient client, MongoDatabase database, BlobStore blobStore) {
         this.client = client;
         this.database = database;
-        this.trxMgr = new MongoDbTrxManager( this, ccontrol);
+        this.trxMgr = new MongoDbTrxManager( this);
         this.blobStore = blobStore;
     }
     
@@ -162,6 +161,6 @@ public class MongoDbDatabase implements StoreDatabase {
     private NodeId createNodeId( Document document) {
         Document iddoc = document.get( Node.NODE_ID_FIELD, Document.class);
 
-        return new NodeId( iddoc.getString( Node.UUID_FIELD), iddoc.getLong( Node.REVISION_FIELD));
+        return new NodeId( iddoc.getString( Node.UUID_FIELD), iddoc.getLong( Node.REVISION_FIELD), iddoc.getLong( Node.STEP_FIELD));
     }
 }

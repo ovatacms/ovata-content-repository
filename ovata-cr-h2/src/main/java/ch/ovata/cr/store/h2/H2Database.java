@@ -14,7 +14,6 @@
 package ch.ovata.cr.store.h2;
 
 import ch.ovata.cr.api.RepositoryException;
-import ch.ovata.cr.spi.store.ConcurrencyControlFactory;
 import ch.ovata.cr.spi.store.StoreCollection;
 import ch.ovata.cr.spi.store.StoreDatabase;
 import ch.ovata.cr.spi.store.StoreDocument;
@@ -41,11 +40,11 @@ public class H2Database implements StoreDatabase {
     private final TransactionManager transactionManager;
     private final String databaseName;
     
-    public H2Database( H2Connection connection, BlobStore blobStore, ConcurrencyControlFactory cfactory, String databaseName) {
+    public H2Database( H2Connection connection, BlobStore blobStore, String databaseName) {
         this.databaseName = databaseName;
         this.connection = connection;
         this.blobStore = blobStore;
-        this.transactionManager = new H2TrxManager( this, cfactory);
+        this.transactionManager = new H2TrxManager( this);
     }
     
     @Override

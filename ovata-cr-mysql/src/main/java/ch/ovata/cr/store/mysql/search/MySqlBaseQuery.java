@@ -42,7 +42,7 @@ public class MySqlBaseQuery {
 
         try( ResultSet r = stmt.executeQuery()) {
             while( r.next()) {
-                ids.add( new NodeId( r.getString( "NODE_ID"), r.getLong( "REVISION")));
+                ids.add( new NodeId( r.getString( "NODE_ID"), r.getLong( "REVISION"), r.getLong( "STEP")));
             }
         }
 

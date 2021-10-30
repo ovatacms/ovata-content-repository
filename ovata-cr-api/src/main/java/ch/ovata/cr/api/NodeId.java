@@ -26,21 +26,24 @@ public class NodeId implements Serializable {
     
     public static final String UUID_FIELD = Node.UUID_FIELD;
     public static final String REVISION_FIELD = Node.REVISION_FIELD;
+    public static final String STEP_FIELD = Node.STEP_FIELD;
     
-    private String uuid;
-    private long revision;
+    private final String uuid;
+    private final long revision;
+    private final long step;
     
-    public NodeId( long revision) {
-        this( UUID.randomUUID().toString().toUpperCase(), revision);
+    public NodeId( long revision, long step) {
+        this( UUID.randomUUID().toString().toUpperCase(), revision, step);
     }
 
     public NodeId( StoreDocument document) {
-        this( document.getString( UUID_FIELD), document.getLong( REVISION_FIELD));
+        this( document.getString( UUID_FIELD), document.getLong( REVISION_FIELD), document.getLong( STEP_FIELD));
     }
     
-    public NodeId( String uuid, long revision) {
+    public NodeId( String uuid, long revision, long step) {
         this.uuid = uuid;
         this.revision = revision;
+        this.step = step;
     }
     
     public String getUUID() {
@@ -49,6 +52,10 @@ public class NodeId implements Serializable {
     
     public long getRevision() {
         return this.revision;
+    }
+    
+    public long getStep() {
+        return this.step;
     }
     
     public boolean isRoot() {

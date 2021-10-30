@@ -14,7 +14,6 @@
 package ch.ovata.cr.store.mysql;
 
 import ch.ovata.cr.api.RepositoryException;
-import ch.ovata.cr.spi.store.ConcurrencyControlFactory;
 import ch.ovata.cr.spi.store.StoreConnection;
 import ch.ovata.cr.spi.store.StoreDatabase;
 import ch.ovata.cr.spi.store.blob.BlobStoreFactory;
@@ -33,14 +32,12 @@ public class MySqlConnection implements StoreConnection {
 
     private final DataSource ds;
     private final BlobStoreFactory blobStoreFactory;
-    private final ConcurrencyControlFactory concurrencyControlFactory;
 
     private final Map<String, MySqlDatabase> databases = new ConcurrentHashMap<>();
     
-    public MySqlConnection( DataSource ds, BlobStoreFactory blobStoreFactory, ConcurrencyControlFactory concurrencyControlFactory) {
+    public MySqlConnection( DataSource ds, BlobStoreFactory blobStoreFactory) {
         this.ds = ds;
         this.blobStoreFactory = blobStoreFactory;
-        this.concurrencyControlFactory = concurrencyControlFactory;
     }
 
     DataSource getDataSource() {
@@ -57,7 +54,7 @@ public class MySqlConnection implements StoreConnection {
         MySqlDatabase database = this.databases.get( name);
         
         if( database == null) {
-            database = new MySqlDatabase(this, this.blobStoreFactory.createBlobStore( name), this.concurrencyControlFactory, name);
+            database = new MySqlDatabase(this, this.blobStoreFactory.createBlobStore( name), name);
 
             this.databases.put( name, database);
         }
@@ -102,19 +99,12 @@ public class MySqlConnection implements StoreConnection {
             return (T)this.ds;
         }
         
-        T object = concurrencyControlFactory.unwrap( c);
-        
-        if( object == null) {
-            object = blobStoreFactory.unwrap( c);
-        }
-        
-        return object;
+        return blobStoreFactory.unwrap( c);
     }
 
     @Override
     public void shutdown() {
         this.databases.clear();
-        this.concurrencyControlFactory.shutdown();
         this.blobStoreFactory.shutdown();
     }
 }

@@ -17,7 +17,6 @@ import ch.ovata.cr.api.RepositoryConnection;
 import ch.ovata.cr.api.RepositoryConnectionDataSource;
 import ch.ovata.cr.store.fs.FSBlobStoreFactory;
 import ch.ovata.cr.store.h2.H2Connection;
-import ch.ovata.cr.store.h2.concurrency.H2ConcurrencyControlFactory;
 import ch.ovata.cr.store.h2.search.H2SearchProviderFactory;
 import java.io.File;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -39,9 +38,8 @@ public class RCH2FS implements RepositoryConnectionDataSource {
         dataSource.setInitialSize( 5);
         dataSource.setDefaultAutoCommit( false);
         
-        H2ConcurrencyControlFactory ccf = new H2ConcurrencyControlFactory( dataSource);
         FSBlobStoreFactory bsf = new FSBlobStoreFactory( new File( "target/blob-store"));
-        H2Connection connection = new H2Connection( dataSource, bsf, ccf);
+        H2Connection connection = new H2Connection( dataSource, bsf);
         H2SearchProviderFactory spf = new H2SearchProviderFactory();
         
         return new RepositoryConnectionImpl( connection, spf);

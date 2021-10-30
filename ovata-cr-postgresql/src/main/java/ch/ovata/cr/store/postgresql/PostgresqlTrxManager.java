@@ -20,7 +20,6 @@ import ch.ovata.cr.api.TrxCallback;
 import ch.ovata.cr.impl.AbstractTrxManager;
 import ch.ovata.cr.impl.SessionImpl;
 import ch.ovata.cr.impl.WorkspaceImpl;
-import ch.ovata.cr.spi.store.ConcurrencyControlFactory;
 import ch.ovata.cr.spi.store.Transaction;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,8 +44,8 @@ public class PostgresqlTrxManager extends AbstractTrxManager {
     
     public static final String TRANSACTIONS_TABLE = "system_transactions";
     
-    public PostgresqlTrxManager( PostgresqlDatabase database, ConcurrencyControlFactory ccontrolfactory) {
-        super( database, ccontrolfactory, () -> 0);
+    public PostgresqlTrxManager( PostgresqlDatabase database) {
+        super( database, () -> 0);
         
         createTransactionsTable();
     }
@@ -58,7 +57,7 @@ public class PostgresqlTrxManager extends AbstractTrxManager {
         try( Connection c = this.getDatabase().getDbConnection(); PreparedStatement stmt = c.prepareStatement( sql)) {
             try( ResultSet r = stmt.executeQuery()) {
                 if( r.next()) {
-                    return r.getLong( "MAXREV");
+                    return r.getLong( 1);
                 }
                 else {
                     return 0l;

@@ -10,7 +10,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javaVersion>17</javaVersion>
-        <revision>1.5.0-SNAPSHOT</revision>
+        <revision>2.0.0-SNAPSHOT</revision>
     </properties>
 
     <scm>
@@ -72,11 +72,6 @@
             </dependency>
             <dependency>
                 <groupId>ch.ovata.cr</groupId>
-                <artifactId>ovata-cr-hz</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.ovata.cr</groupId>
                 <artifactId>ovata-cr-utils</artifactId>
                 <version>${revision}</version>
             </dependency>
@@ -105,12 +100,12 @@
             <dependency>
                 <groupId>org.mongodb</groupId>
                 <artifactId>mongodb-driver-sync</artifactId>
-                <version>4.3.2</version>
+                <version>4.3.3</version>
             </dependency>
             <dependency>
                 <groupId>javax.json</groupId>
                 <artifactId>javax.json-api</artifactId>
-                <version>1.0</version>
+                <version>1.1.4</version>
             </dependency>
             <dependency>
                 <groupId>org.yaml</groupId>
@@ -202,7 +197,6 @@
         <module>ovata-cr-mysql</module>
         <module>ovata-cr-postgresql</module>
         <module>ovata-cr-test</module>
-        <module>ovata-cr-hz</module>
         <module>ovata-cr-utils</module>
         <module>ovata-cr-bson</module>
         <module>ovata-cr-h2</module>

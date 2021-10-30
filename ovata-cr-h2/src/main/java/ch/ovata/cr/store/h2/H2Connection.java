@@ -14,7 +14,6 @@
 package ch.ovata.cr.store.h2;
 
 import ch.ovata.cr.api.RepositoryException;
-import ch.ovata.cr.spi.store.ConcurrencyControlFactory;
 import ch.ovata.cr.spi.store.StoreConnection;
 import ch.ovata.cr.spi.store.StoreDatabase;
 import ch.ovata.cr.spi.store.blob.BlobStoreFactory;
@@ -33,14 +32,12 @@ public class H2Connection implements StoreConnection {
 
     private final DataSource ds;
     private final BlobStoreFactory blobStoreFactory;
-    private final ConcurrencyControlFactory concurrencyControlFactory;
 
     private final Map<String, H2Database> databases = new ConcurrentHashMap<>();
     
-    public H2Connection( DataSource ds, BlobStoreFactory blobStoreFactory, ConcurrencyControlFactory concurrencyControlFactory) {
+    public H2Connection( DataSource ds, BlobStoreFactory blobStoreFactory) {
         this.ds = ds;
         this.blobStoreFactory = blobStoreFactory;
-        this.concurrencyControlFactory = concurrencyControlFactory;
     }
 
     DataSource getDataSource() {
@@ -57,7 +54,7 @@ public class H2Connection implements StoreConnection {
         H2Database database = this.databases.get( name);
         
         if( database == null) {
-            database = new H2Database(this, this.blobStoreFactory.createBlobStore( name), this.concurrencyControlFactory, name);
+            database = new H2Database(this, this.blobStoreFactory.createBlobStore( name), name);
 
             this.databases.put( name, database);
         }
@@ -102,19 +99,12 @@ public class H2Connection implements StoreConnection {
             return (T)this.ds;
         }
         
-        T object = concurrencyControlFactory.unwrap( c);
-        
-        if( object == null) {
-            object = blobStoreFactory.unwrap( c);
-        }
-        
-        return object;
+        return blobStoreFactory.unwrap( c);
     }
 
     @Override
     public void shutdown() {
         this.databases.clear();
-        this.concurrencyControlFactory.shutdown();
         this.blobStoreFactory.shutdown();
     }
 }

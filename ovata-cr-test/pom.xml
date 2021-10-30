@@ -73,11 +73,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>ch.ovata.cr</groupId>
-            <artifactId>ovata-cr-hz</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
             <version>2.9.0</version>
