@@ -14,6 +14,7 @@
 package ch.ovata.cr.store.postgresql;
 
 import ch.ovata.cr.api.Node;
+import ch.ovata.cr.api.NodeId;
 import ch.ovata.cr.api.RepositoryException;
 import ch.ovata.cr.spi.store.StoreCollection;
 import ch.ovata.cr.spi.store.StoreDocument;
@@ -22,6 +23,7 @@ import ch.ovata.cr.spi.store.StoreDocumentList;
 import ch.ovata.cr.bson.MongoDbDocument;
 import ch.ovata.cr.bson.MongoDbDocumentList;
 import ch.ovata.cr.spi.store.Transaction;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -78,10 +80,14 @@ public class PostgresqlCollection implements StoreCollection {
         logger.trace( "insertMany: {}.", sql);
         
         try( PreparedStatement stmt = c.prepareStatement( sql)) {
+            long step = 0;
+            
             for( StoreDocument doc : documents) {
+                doc.getDocument( Node.NODE_ID_FIELD).append( NodeId.STEP_FIELD, step);
                 populateStatement(stmt, doc);
 
                 stmt.addBatch();
+                step++;
             }
 
             stmt.executeBatch();
@@ -146,9 +152,14 @@ public class PostgresqlCollection implements StoreCollection {
 
     @Override
     public StoreDocumentIterable findByParentId(String parentId, long revision) {
-        String sql = String.format( "SELECT t.PAYLOAD FROM %s t INNER JOIN (SELECT NODE_ID, MAX(REVISION) as MREV, MAX(STEP) as MSTEP FROM %s WHERE (PARENT_ID = ?) AND (REVISION <= ?) GROUP BY NODE_ID) s on t.NODE_ID = s.NODE_ID AND t.REVISION = s.MREV AND t.STEP = s.MSTEP WHERE NOT t.REMOVED ORDER BY t.NODE_ID ASC", getTableName(), getTableName());
+        String sql = String.format( "SELECT p.PAYLOAD from %s p, " +
+                                    "(SELECT t.NODE_ID, i.MREV, MAX(t.STEP) as MSTEP FROM %s t, " +
+                                    "(SELECT NODE_ID, MAX(REVISION) as MREV FROM %s WHERE (PARENT_ID = ?) AND (REVISION <= ?) GROUP BY NODE_ID) i " +
+                                    "where t.NODE_ID = i.NODE_ID and t.revision = i.MREV GROUP BY t.node_id, i.MREV) j " +
+                                    "where p.node_id = j.node_id and p.revision = j.mrev and p.step = j.mstep", 
+                                    getTableName(), getTableName(), getTableName());
         
-        logger.trace( "findByParentId: {}.", sql);
+        logger.info( "findByParentId: {}.", sql);
         
         try( Connection c = this.database.getDbConnection(); PreparedStatement stmt = c.prepareStatement( sql)) {
             stmt.setString( 1, parentId);

@@ -74,7 +74,6 @@ public class NodeRenameTest extends AbstractOvataRepositoryTest {
     
     @Test
     public void testRenameNode() throws Exception {
-        System.out.println( "------> executing testRenameNode");
         Repository repository = this.getRepositoryAsAdministrator();
         Session session = repository.getSession( "test");
 

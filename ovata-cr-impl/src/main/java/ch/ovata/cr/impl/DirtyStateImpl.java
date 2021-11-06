@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -43,7 +44,7 @@ public class DirtyStateImpl implements DirtyState {
     
     private final String workspaceName;
     private final ValueFactory vf;
-    private final Map<String, Modification> modifications = new HashMap<>();
+    private final Map<String, Modification> modifications = new LinkedHashMap<>();
     private final Map<ParentChildId, Modification> parentChildUpdates = new HashMap<>();
     
     public DirtyStateImpl( String workspaceName, ValueFactory vf) {
