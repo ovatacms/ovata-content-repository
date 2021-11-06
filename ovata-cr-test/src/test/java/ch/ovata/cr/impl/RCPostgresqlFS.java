@@ -31,12 +31,12 @@ public class RCPostgresqlFS implements RepositoryConnectionDataSource {
         BasicDataSource dataSource = new BasicDataSource();
         
         dataSource.setDriverClassName( "org.postgresql.Driver");
-        dataSource.setUrl( "jdbc:postgresql://localhost/dani");
+        dataSource.setUrl( "jdbc:postgresql://localhost/ovata");
         dataSource.setUsername( "postgres");
-        dataSource.setPassword( "");
+        dataSource.setPassword( "postgres");
         dataSource.setInitialSize( 5);
         dataSource.setDefaultAutoCommit( false);
-        
+
         PostgresqlBlobStoreFactory bsf = new PostgresqlBlobStoreFactory( dataSource);
         PostgresqlConnection connection = new PostgresqlConnection( dataSource, bsf);
         PostgresqlSearchProviderFactory spf = new PostgresqlSearchProviderFactory();

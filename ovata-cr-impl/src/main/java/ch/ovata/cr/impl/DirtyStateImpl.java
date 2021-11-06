@@ -352,7 +352,7 @@ public class DirtyStateImpl implements DirtyState {
 
             StoreDocument addDocument = this.getNode().getDocument();
             
-            addDocument.getDocument( Node.NODE_ID_FIELD).append( NodeId.REVISION_FIELD, revision);
+            addDocument.getDocument( Node.NODE_ID_FIELD).append( NodeId.REVISION_FIELD, revision).append( NodeId.STEP_FIELD, 1l);
             
             return Arrays.asList( removeDocument, addDocument);
         }
@@ -388,7 +388,7 @@ public class DirtyStateImpl implements DirtyState {
 
             StoreDocument addDocument = this.getNode().getDocument();
             
-            addDocument.getDocument( Node.NODE_ID_FIELD).append( NodeId.REVISION_FIELD, revision);
+            addDocument.getDocument( Node.NODE_ID_FIELD).append( NodeId.REVISION_FIELD, revision).append( NodeId.STEP_FIELD, 1l);
             
             return Arrays.asList( removeDocument, addDocument);
         }

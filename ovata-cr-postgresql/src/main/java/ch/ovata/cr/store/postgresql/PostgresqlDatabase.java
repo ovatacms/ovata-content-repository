@@ -73,14 +73,15 @@ public class PostgresqlDatabase implements StoreDatabase {
         String sql = SqlUtils.createStatement( "CREATE TABLE %s (" +
                     "NODE_ID CHAR( 36)," +
                     "REVISION BIGINT," +
+                    "STEP BIGINT," +
                     "PARENT_ID CHAR( 36)," +
                     "NAME VARCHAR( 255)," +
                     "REMOVED BOOLEAN," +
                     "PAYLOAD JSON NOT NULL," +
-                    "PRIMARY KEY (NODE_ID, REVISION)" +
+                    "PRIMARY KEY (NODE_ID, REVISION, STEP)" +
                 ")", fqtn);
         
-        String i1 = String.format( "CREATE INDEX %s ON %s (PARENT_ID, NAME, REVISION);", fqtn + "_idx1", fqtn);
+        String i1 = String.format( "CREATE INDEX %s ON %s (PARENT_ID, NAME, REVISION DESC, STEP DESC);", fqtn + "_idx1", fqtn);
         
         try( Connection c = getDbConnection(); Statement stmt = c.createStatement()) {
             stmt.execute( sql);

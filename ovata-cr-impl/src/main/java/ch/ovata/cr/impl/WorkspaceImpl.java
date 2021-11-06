@@ -34,6 +34,7 @@ import ch.ovata.cr.spi.store.StoreDocumentList;
 import ch.ovata.cr.spi.store.Transaction;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -170,7 +171,7 @@ public class WorkspaceImpl implements Workspace {
     
     private StoreDocument createRootDocument( ValueFactory vf) {
         return vf.newDocument()
-                    .append( Node.NODE_ID_FIELD, vf.newDocument().append( Node.UUID_FIELD, Node.ROOT_ID).append( Node.REVISION_FIELD, 0l))
+                    .append( Node.NODE_ID_FIELD, vf.newDocument().append( Node.UUID_FIELD, Node.ROOT_ID).append( Node.REVISION_FIELD, 0l).append( Node.STEP_FIELD, 0l))
                     .append( Node.CREATE_TIME_FIELD, new Date())
                     .append( Node.TYPE_FIELD, CoreNodeTypes.UNSTRUCTURED)
                     .append( Node.NAME_FIELD, "/")

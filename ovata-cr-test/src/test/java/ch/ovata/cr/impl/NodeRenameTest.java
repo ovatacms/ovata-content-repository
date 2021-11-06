@@ -74,6 +74,7 @@ public class NodeRenameTest extends AbstractOvataRepositoryTest {
     
     @Test
     public void testRenameNode() throws Exception {
+        System.out.println( "------> executing testRenameNode");
         Repository repository = this.getRepositoryAsAdministrator();
         Session session = repository.getSession( "test");
 
@@ -103,7 +104,6 @@ public class NodeRenameTest extends AbstractOvataRepositoryTest {
         Optional<Node> n1 = session.findNodeByPath( "/users/roman");
         
         Assert.assertFalse( n1.isPresent());
-        
         Optional<Node> n2 = session.findNodeByPath( "/users/rhodan");
         
         Assert.assertTrue( n2.isPresent());

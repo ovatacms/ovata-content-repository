@@ -19,7 +19,6 @@ import ch.ovata.cr.api.RepositoryConnectionDataSource;
 import ch.ovata.cr.api.RepositoryException;
 import ch.ovata.cr.api.Session;
 import ch.ovata.cr.utils.YamlImporter;
-import com.mongodb.client.MongoClient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -69,44 +68,44 @@ public abstract class AbstractOvataRepositoryTest {
     @Before
     public void setUp() throws Exception {
         try {
-        System.setProperty( "org.slf4j.simpleLogger.defaultLogLevel", "info");
-        System.setProperty( "org.slf4j.simpleLogger.log.ch.ovata.cr", "debug");
-        // Choose implementation to test
-        // ds = new RCMySql();
-        // ds = new RCPostgresqlElastic();
-         ds = new RCPostgresqlFS();
-//         ds = new RCMongoDbS3();
-//        ds = new RCH2FS();
-        
-        this.connection = ds.getConnection();
+            System.setProperty( "org.slf4j.simpleLogger.defaultLogLevel", "info");
+            System.setProperty( "org.slf4j.simpleLogger.log.ch.ovata.cr", "debug");
+            // Choose implementation to test
+            // ds = new RCMySql();
+            // ds = new RCPostgresqlElastic();
+             ds = new RCPostgresqlFS();
+    //         ds = new RCMongoDbS3();
+    //        ds = new RCH2FS();
 
-        CachingStoreCollectionWrapper.clearCache();
+            this.connection = ds.getConnection();
 
-        MongoClient mongo = this.connection.unwrap( MongoClient.class);
-        
-        if( mongo != null) {
-            System.out.println( "-----> Removing database before test run and clearing cache.");
-            mongo.getDatabase( "ovatadev").drop();
-        }
-        
-        DataSource ds = this.connection.unwrap( DataSource.class);
-        
-        if( ds != null) {
-            System.out.println( "-----> Dropping tables.");
-            try( Connection c = ds.getConnection()) {
-                dropTable( c, "ovatadev_system_transactions");
-                dropTable( c, "ovatadev_system_users");
-                dropTable( c, "ovatadev_system_configuration");
-                dropTable( c, "ovatadev_test");
-                dropTable( c, "ovatadev_system_config_clone");
-                dropTable( c, "ovatadev_other");
-                dropTable( c, "blobstore");
+            CachingStoreCollectionWrapper.clearCache();
+    //
+    //        MongoClient mongo = this.connection.unwrap( MongoClient.class);
+    //        
+    //        if( mongo != null) {
+    //            System.out.println( "-----> Removing database before test run and clearing cache.");
+    //            mongo.getDatabase( "ovatadev").drop();
+    //        }
+
+            DataSource ds = this.connection.unwrap( DataSource.class);
+
+            if( ds != null) {
+                System.out.println( "-----> Dropping tables.");
+                try( Connection c = ds.getConnection()) {
+                    dropTable( c, "ovatadev_system_transactions");
+                    dropTable( c, "ovatadev_system_users");
+                    dropTable( c, "ovatadev_system_configuration");
+                    dropTable( c, "ovatadev_test");
+                    dropTable( c, "ovatadev_system_config_clone");
+                    dropTable( c, "ovatadev_other");
+                    dropTable( c, "blobstore");
+                }
             }
-        }
 
-        Repository repository = connection.create( TEST_REPO_NAME, TEST_DATABASE_USERNAME, TEST_DATABASE_PASSWORD);
-        
-        repository.createWorkspace( TEST_WORKSPACE_NAME);
+            Repository repository = connection.create( TEST_REPO_NAME, TEST_DATABASE_USERNAME, TEST_DATABASE_PASSWORD);
+
+            repository.createWorkspace( TEST_WORKSPACE_NAME);
         }
         catch( Exception e) {
             e.printStackTrace();

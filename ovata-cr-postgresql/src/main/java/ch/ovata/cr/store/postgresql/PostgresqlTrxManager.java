@@ -143,7 +143,7 @@ public class PostgresqlTrxManager extends AbstractTrxManager {
         try( Statement stmt = connection.createStatement()) {
             try( ResultSet r = stmt.executeQuery( "SELECT max(revision) as CURRENT_REVISION FROM " + getTrxTableName())) {
                 if( r.next()) {
-                    return r.getLong( "CURRENT_REVISION") + 2;
+                    return r.getLong( "CURRENT_REVISION") + 1;
                 }
                 else {
                     throw new RepositoryException( "Could not get next revision.");

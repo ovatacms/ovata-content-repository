@@ -63,7 +63,7 @@ public class NodeId implements Serializable {
     }
     
     public StoreDocument toDocument( StoreDocument document) {
-        return document.append( UUID_FIELD, this.uuid).append( REVISION_FIELD, this.revision);
+        return document.append( UUID_FIELD, this.uuid).append( REVISION_FIELD, this.revision).append( STEP_FIELD, 0l);
     }
     
     @Override

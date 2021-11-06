@@ -33,12 +33,16 @@ import org.bson.Document;
 import org.bson.json.JsonMode;
 import org.bson.json.JsonWriterSettings;
 import org.postgresql.util.PGobject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author dani
  */
 public class PostgresqlCollection implements StoreCollection {
+    
+    private static final Logger logger = LoggerFactory.getLogger( PostgresqlCollection.class);
     
     private final PostgresqlDatabase database;
     private final String name;
@@ -51,6 +55,8 @@ public class PostgresqlCollection implements StoreCollection {
     @Override
     public void init( StoreDocument document) {
         String sql = SqlUtils.createStatement( "INSERT INTO %s (NODE_ID, REVISION, STEP, PARENT_ID, NAME, PAYLOAD, REMOVED) VALUES (?,?,?,?,?,?,?)", getTableName());
+        
+        logger.trace( "init: {}.", sql);
         
         try( Connection c = this.database.getDbConnection(); PreparedStatement stmt = c.prepareStatement( sql)) {
             populateStatement(stmt, document);
@@ -69,6 +75,8 @@ public class PostgresqlCollection implements StoreCollection {
         Connection c = ((PostgresqlTransaction)trx).getConnection();
         String sql = SqlUtils.createStatement( "INSERT INTO %s (NODE_ID, REVISION, STEP, PARENT_ID, NAME, PAYLOAD, REMOVED) VALUES (?,?,?,?,?,?,?)", getTableName());
         
+        logger.trace( "insertMany: {}.", sql);
+        
         try( PreparedStatement stmt = c.prepareStatement( sql)) {
             for( StoreDocument doc : documents) {
                 populateStatement(stmt, doc);
@@ -85,7 +93,9 @@ public class PostgresqlCollection implements StoreCollection {
 
     @Override
     public StoreDocument findById(String nodeId, long revision) {
-        String sql = SqlUtils.createStatement( "SELECT PAYLOAD, REMOVED FROM %s WHERE (NODE_ID = ?) AND (REVISION <= ?) ORDER BY REVISION DESC LIMIT 1", getTableName());
+        String sql = SqlUtils.createStatement( "SELECT PAYLOAD, REMOVED FROM %s WHERE (NODE_ID = ?) AND (REVISION <= ?) ORDER BY REVISION DESC, STEP DESC LIMIT 1", getTableName());
+        
+        logger.trace( "findById: {}.", sql);
         
         try( Connection c = this.database.getDbConnection(); PreparedStatement stmt = c.prepareStatement( sql)) {
             stmt.setString( 1, nodeId);
@@ -109,7 +119,9 @@ public class PostgresqlCollection implements StoreCollection {
 
     @Override
     public StoreDocument findByParentIdAndName(String parentId, String name, long revision) {
-        String sql = SqlUtils.createStatement( "SELECT PAYLOAD, REMOVED FROM %s WHERE (PARENT_ID = ?) AND (NAME = ?) AND (REVISION <= ?) ORDER BY REVISION DESC LIMIT 1", getTableName());
+        String sql = SqlUtils.createStatement( "SELECT PAYLOAD, REMOVED FROM %s WHERE (PARENT_ID = ?) AND (NAME = ?) AND (REVISION <= ?) ORDER BY REVISION DESC, STEP DESC LIMIT 1", getTableName());
+        
+        logger.trace( "findByParentIdAndName: {} for parent {} and name {} on revision {}.", sql, parentId, name, revision);
         
         try( Connection c = this.database.getDbConnection(); PreparedStatement stmt = c.prepareStatement( sql)) {
             stmt.setString( 1, parentId);
@@ -134,7 +146,9 @@ public class PostgresqlCollection implements StoreCollection {
 
     @Override
     public StoreDocumentIterable findByParentId(String parentId, long revision) {
-        String sql = String.format( "SELECT t.PAYLOAD FROM %s t INNER JOIN (SELECT NODE_ID, MAX(REVISION) as MREV FROM %s WHERE (PARENT_ID = ?) AND (REVISION <= ?) GROUP BY NODE_ID) s on t.NODE_ID = s.NODE_ID AND t.REVISION = s.MREV WHERE NOT t.REMOVED ORDER BY t.NODE_ID ASC", getTableName(), getTableName());
+        String sql = String.format( "SELECT t.PAYLOAD FROM %s t INNER JOIN (SELECT NODE_ID, MAX(REVISION) as MREV, MAX(STEP) as MSTEP FROM %s WHERE (PARENT_ID = ?) AND (REVISION <= ?) GROUP BY NODE_ID) s on t.NODE_ID = s.NODE_ID AND t.REVISION = s.MREV AND t.STEP = s.MSTEP WHERE NOT t.REMOVED ORDER BY t.NODE_ID ASC", getTableName(), getTableName());
+        
+        logger.trace( "findByParentId: {}.", sql);
         
         try( Connection c = this.database.getDbConnection(); PreparedStatement stmt = c.prepareStatement( sql)) {
             stmt.setString( 1, parentId);
@@ -167,9 +181,9 @@ public class PostgresqlCollection implements StoreCollection {
         return new MongoDbDocumentList();
     }
 
-    private static JsonWriterSettings JSON_SETTINGS = JsonWriterSettings.builder().outputMode(JsonMode.EXTENDED).build();
+    private static final JsonWriterSettings JSON_SETTINGS = JsonWriterSettings.builder().outputMode(JsonMode.EXTENDED).build();
     
-    private void populateStatement(  PreparedStatement stmt, StoreDocument document) throws SQLException {
+    private void populateStatement( PreparedStatement stmt, StoreDocument document) throws SQLException {
         stmt.setString( 1, document.getDocument( Node.NODE_ID_FIELD).getString( Node.UUID_FIELD));
         stmt.setLong( 2, document.getDocument( Node.NODE_ID_FIELD).getLong( Node.REVISION_FIELD));
         stmt.setLong( 3, document.getDocument( Node.NODE_ID_FIELD).getLong( Node.STEP_FIELD));
