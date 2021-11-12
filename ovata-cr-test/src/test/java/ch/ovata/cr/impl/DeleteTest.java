@@ -17,18 +17,15 @@ import ch.ovata.cr.api.CoreNodeTypes;
 import ch.ovata.cr.api.Node;
 import ch.ovata.cr.api.Repository;
 import ch.ovata.cr.api.Session;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires MongoDb and S3.")
-@RunWith( SmokeRunner.class)
+@Tag( "integration-test")
 public class DeleteTest extends AbstractOvataRepositoryTest {
     
     @Test
@@ -63,7 +60,7 @@ public class DeleteTest extends AbstractOvataRepositoryTest {
         
         dani = session.getNodeByPath( "/users/dani");
         
-        Assert.assertTrue( dani.isOfType( CoreNodeTypes.FOLDER));
+        Assertions.assertTrue( dani.isOfType( CoreNodeTypes.FOLDER));
     }
     
     @Test
@@ -78,13 +75,13 @@ public class DeleteTest extends AbstractOvataRepositoryTest {
         for( int i = 0; i < 20; i++) {
             root.addNode( "Node" + i, CoreNodeTypes.UNSTRUCTURED);
         }
-        
+
         session.commit();
         
         session = repository.getSession( TEST_WORKSPACE_NAME);
         root = session.getRoot().getOrAddNode( "myroot", CoreNodeTypes.FOLDER);
         
-        Assert.assertEquals( 20, root.getNodes().size());
+        Assertions.assertEquals( 20, root.getNodes().size());
         
         root.getNodes().forEach( Node::remove);
         
@@ -97,6 +94,6 @@ public class DeleteTest extends AbstractOvataRepositoryTest {
         session = repository.getSession( TEST_WORKSPACE_NAME);
         root = session.getRoot().getOrAddNode( "myroot", CoreNodeTypes.FOLDER);
         
-        Assert.assertEquals( 10, root.getNodes().size());
+        Assertions.assertEquals( 10, root.getNodes().size());
     }
 }

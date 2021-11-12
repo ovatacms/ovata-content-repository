@@ -23,23 +23,20 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires MongoDb and S3.")
-@RunWith( SmokeRunner.class)
+@Tag( "integration-test")
 public class IndexTest extends AbstractOvataRepositoryTest {
     
     @Test
-    @Ignore
+    @Disabled
     public void testReindex() throws Exception {
         Repository repository = this.getRepositoryAsAdministrator();
         Session session = repository.getSession( TEST_WORKSPACE_NAME);
@@ -53,13 +50,13 @@ public class IndexTest extends AbstractOvataRepositoryTest {
         FulltextQuery query = session.createQuery( FulltextQuery.class);
         List<Node> nodes = query.term ( "pdf995").execute();
         
-        Assert.assertEquals( 1, nodes.size());
+        Assertions.assertEquals( 1, nodes.size());
         
         nodes.stream().forEach( n -> System.out.println( "Found node : " + n.getName()));
     }
     
     @Test
-    @Ignore
+    @Disabled
     public void testFulltextIndexer() throws Exception {
         Repository repository = this.getRepositoryAsAdministrator();
         Session session = repository.getSession( TEST_WORKSPACE_NAME);
@@ -71,7 +68,7 @@ public class IndexTest extends AbstractOvataRepositoryTest {
         FulltextQuery query = session.createQuery( FulltextQuery.class);
         List<Node> nodes = query.term ( "OASIS").execute();
         
-        Assert.assertEquals( 2, nodes.size());
+        Assertions.assertEquals( 2, nodes.size());
         
         nodes.stream().forEach( n -> System.out.println( "Found node : " + n.getName()));
     }

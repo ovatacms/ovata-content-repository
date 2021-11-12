@@ -17,18 +17,15 @@ import ch.ovata.cr.api.CoreNodeTypes;
 import ch.ovata.cr.api.Node;
 import ch.ovata.cr.api.Repository;
 import ch.ovata.cr.api.Session;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires MongoDb and S3.")
-@RunWith( SmokeRunner.class)
+@Tag( "integration-test")
 public class ReferenceTest extends AbstractOvataRepositoryTest {
     
     @Test
@@ -54,7 +51,7 @@ public class ReferenceTest extends AbstractOvataRepositoryTest {
         Node base = session.getNodeByPath( "/basenode");
         Node ref = base.getReference( "reference").getNode();
         
-        Assert.assertNotNull( ref);
-        Assert.assertEquals( "Daniel", ref.getString( "name"));
+        Assertions.assertNotNull( ref);
+        Assertions.assertEquals( "Daniel", ref.getString( "name"));
     }
 }

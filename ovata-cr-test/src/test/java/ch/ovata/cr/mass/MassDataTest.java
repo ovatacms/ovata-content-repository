@@ -20,19 +20,16 @@ import ch.ovata.cr.api.Session;
 import ch.ovata.cr.api.ValueFactory;
 import ch.ovata.cr.impl.AbstractOvataRepositoryTest;
 import java.time.ZonedDateTime;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires MongoDb and S3.")
-@RunWith( SmokeRunner.class)
-@Ignore
+@Tag( "integration-test")
+@Disabled
 public class MassDataTest extends AbstractOvataRepositoryTest {
     
     @Test

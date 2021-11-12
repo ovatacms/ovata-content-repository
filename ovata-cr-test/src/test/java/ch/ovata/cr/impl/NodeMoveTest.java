@@ -17,18 +17,15 @@ import ch.ovata.cr.api.CoreNodeTypes;
 import ch.ovata.cr.api.Node;
 import ch.ovata.cr.api.Repository;
 import ch.ovata.cr.api.Session;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires MongoDb and S3.")
-@RunWith( SmokeRunner.class)
+@Tag( "integration-test")
 public class NodeMoveTest extends AbstractOvataRepositoryTest {
     
     @Test
@@ -57,8 +54,8 @@ public class NodeMoveTest extends AbstractOvataRepositoryTest {
         
         roman.moveTo( roles);
         
-        Assert.assertFalse( session.findNodeByPath( "/users/roman").isPresent());
-        Assert.assertTrue( session.findNodeByPath( "/roles/roman").isPresent());
+        Assertions.assertFalse( session.findNodeByPath( "/users/roman").isPresent());
+        Assertions.assertTrue( session.findNodeByPath( "/roles/roman").isPresent());
         
         session.rollback();
     }
@@ -96,13 +93,13 @@ public class NodeMoveTest extends AbstractOvataRepositoryTest {
         roman = session.getNodeByIdentifier( romanId);
         roles = roman.getParent();
         
-        Assert.assertEquals( "roles", roles.getName());
+        Assertions.assertEquals( "roles", roles.getName());
         
         users = session.getNodeByPath( "/users");
         
-        Assert.assertEquals( 1, users.getNodes().size());
-        Assert.assertEquals( "dani", users.getNodes().iterator().next().getName());
-        Assert.assertEquals( 1, roles.getNodes().size());
+        Assertions.assertEquals( 1, users.getNodes().size());
+        Assertions.assertEquals( "dani", users.getNodes().iterator().next().getName());
+        Assertions.assertEquals( 1, roles.getNodes().size());
     }
     
     @Test
@@ -136,7 +133,7 @@ public class NodeMoveTest extends AbstractOvataRepositoryTest {
         
         roman = session.getNodeByPath( "/roles/roman");
         
-        Assert.assertEquals( "Additional Value", roman.getString( "additional"));
+        Assertions.assertEquals( "Additional Value", roman.getString( "additional"));
         
         session.rollback();
     }
@@ -156,14 +153,14 @@ public class NodeMoveTest extends AbstractOvataRepositoryTest {
         
         Node timon = users.addNode( "timon", CoreNodeTypes.UNSTRUCTURED);
         
-        Assert.assertTrue( session.findNodeByPath( "/users/timon").isPresent());
+        Assertions.assertTrue( session.findNodeByPath( "/users/timon").isPresent());
         
         timon.moveTo( other);
         
-        Assert.assertFalse( session.findNodeByPath( "/users/timon").isPresent());
-        Assert.assertTrue( session.findNodeByPath( "/other/timon").isPresent());
+        Assertions.assertFalse( session.findNodeByPath( "/users/timon").isPresent());
+        Assertions.assertTrue( session.findNodeByPath( "/other/timon").isPresent());
         
-        Assert.assertEquals( other, timon.getParent());
+        Assertions.assertEquals( other, timon.getParent());
         
         session.commit();
     }
@@ -183,15 +180,15 @@ public class NodeMoveTest extends AbstractOvataRepositoryTest {
         
         String timonId = timon.getId();
         
-        Assert.assertTrue( session.findNodeByPath( "/users/timon").isPresent());
+        Assertions.assertTrue( session.findNodeByPath( "/users/timon").isPresent());
         
         timon.moveTo( other);
         
         Node timon2 = session.getNodeByIdentifier( timonId);
         
-        Assert.assertEquals( "other", timon2.getParent().getName());
+        Assertions.assertEquals( "other", timon2.getParent().getName());
         
-        Assert.assertEquals( other, timon.getParent());
+        Assertions.assertEquals( other, timon.getParent());
         
         session.commit();
     }
@@ -217,7 +214,7 @@ public class NodeMoveTest extends AbstractOvataRepositoryTest {
         Node timon2 = session2.getNodeByPath( "/users/timon");
         Node other2 = session2.getNodeByPath( "/other");
         
-        Assert.assertTrue( session.findNodeByPath( "/users/timon").isPresent());
+        Assertions.assertTrue( session.findNodeByPath( "/users/timon").isPresent());
         
         timon2.moveTo( other2);
         

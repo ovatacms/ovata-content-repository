@@ -23,18 +23,15 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Optional;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires MongoDb and S3.")
-@RunWith( SmokeRunner.class)
+@Tag( "integration-test")
 public class RepositoryTest extends AbstractOvataRepositoryTest {
     
     @Test
@@ -59,13 +56,13 @@ public class RepositoryTest extends AbstractOvataRepositoryTest {
 
         Collection<? extends Node> nodes = users.getNodes();
 
-        Assert.assertEquals( 2, nodes.size());
+        Assertions.assertEquals( 2, nodes.size());
 
         Node rdani = users.getNode( "dani");
 
-        Assert.assertNotNull( rdani);
-        Assert.assertEquals( "dani", rdani.getName());
-        Assert.assertEquals( "Daniel Hasler", rdani.getProperty( "cn").getValue().getString());
+        Assertions.assertNotNull( rdani);
+        Assertions.assertEquals( "dani", rdani.getName());
+        Assertions.assertEquals( "Daniel Hasler", rdani.getProperty( "cn").getValue().getString());
 
         rdani.setProperty( "mail", session.getValueFactory().of( "daniel.hasler@bluesky-it.ch"));
 
@@ -73,25 +70,25 @@ public class RepositoryTest extends AbstractOvataRepositoryTest {
 
         Node udani = session.getNodeByPath( "/users/dani");
 
-        Assert.assertNotNull( udani);
-        Assert.assertEquals( "dani", udani.getName());
-        Assert.assertEquals( "daniel.hasler@bluesky-it.ch", udani.getProperty( "mail").getValue().getString());
+        Assertions.assertNotNull( udani);
+        Assertions.assertEquals( "dani", udani.getName());
+        Assertions.assertEquals( "daniel.hasler@bluesky-it.ch", udani.getProperty( "mail").getValue().getString());
 
         Session ro_session = repository.getSession( "test", oldRevision);
 
         Node rodani = ro_session.getNodeByPath( "/users/dani");
 
-        Assert.assertNotNull( rodani);
-        Assert.assertEquals( "dani", rodani.getName());
-        Assert.assertEquals( "daniel@hasler-gisin.ch", rodani.getProperty( "mail").getValue().getString());
+        Assertions.assertNotNull( rodani);
+        Assertions.assertEquals( "dani", rodani.getName());
+        Assertions.assertEquals( "daniel@hasler-gisin.ch", rodani.getProperty( "mail").getValue().getString());
 
-        Assert.assertEquals( 2, rodani.getProperties().size());
+        Assertions.assertEquals( 2, rodani.getProperties().size());
 
         session = repository.getSession( "test");
 
         Node users2 = session.getNodeByPath( "/users");
 
-        Assert.assertEquals( 2, users2.getNodes().size());
+        Assertions.assertEquals( 2, users2.getNodes().size());
     }
     
     @Test
@@ -103,7 +100,7 @@ public class RepositoryTest extends AbstractOvataRepositoryTest {
         Node users = node.addNode( "users", CoreNodeTypes.UNSTRUCTURED);
         Node dani = users.addNode( "dani", CoreNodeTypes.UNSTRUCTURED);
 
-        Assert.assertTrue( session.isDirty());
+        Assertions.assertTrue( session.isDirty());
         
         session.commit();
 
@@ -115,7 +112,7 @@ public class RepositoryTest extends AbstractOvataRepositoryTest {
 
         Optional<? extends Node> odani = session.findNodeByPath( "/users/dani");
 
-        Assert.assertFalse( odani.isPresent());
+        Assertions.assertFalse( odani.isPresent());
     }
     
     @Test 
@@ -135,7 +132,7 @@ public class RepositoryTest extends AbstractOvataRepositoryTest {
 
         Optional<? extends Node> odani = session.findNodeByPath( "/users/dani");
 
-        Assert.assertFalse( odani.isPresent());
+        Assertions.assertFalse( odani.isPresent());
     }
     
     @Test
@@ -164,8 +161,8 @@ public class RepositoryTest extends AbstractOvataRepositoryTest {
 
         Node dani2 = session2.getNodeByPath( "/users/dani");
 
-        Assert.assertEquals( lvalue, (long)dani2.getProperty( "longvalue").getValue().getLong());
-        Assert.assertEquals( true, (boolean)dani2.getProperty( "booleanvalue").getValue().getBoolean());
+        Assertions.assertEquals( lvalue, (long)dani2.getProperty( "longvalue").getValue().getLong());
+        Assertions.assertEquals( true, (boolean)dani2.getProperty( "booleanvalue").getValue().getBoolean());
     }
     
     @Test
@@ -187,21 +184,21 @@ public class RepositoryTest extends AbstractOvataRepositoryTest {
         
         Optional<? extends Node> odani = session.findNodeByPath( "/users/dani");
         
-        Assert.assertFalse( odani.isPresent());
+        Assertions.assertFalse( odani.isPresent());
         
         odani = session.findNodeByIdentifier( id);
         
-        Assert.assertFalse( odani.isPresent());
+        Assertions.assertFalse( odani.isPresent());
         
         session.commit();
         
         odani = session.findNodeByPath( "/users/dani");
         
-        Assert.assertFalse( odani.isPresent());
+        Assertions.assertFalse( odani.isPresent());
         
         odani = session.findNodeByIdentifier( id);
         
-        Assert.assertFalse( odani.isPresent());
+        Assertions.assertFalse( odani.isPresent());
     }
     
     @Test
@@ -219,10 +216,10 @@ public class RepositoryTest extends AbstractOvataRepositoryTest {
         
         Optional<? extends Node> odani = session.findNodeByPath( "/users/dani");
         
-        Assert.assertTrue( odani.isPresent());
+        Assertions.assertTrue( odani.isPresent());
         
         Collection<? extends Node> children = users.getNodes();
         
-        Assert.assertEquals( 1, children.size());
+        Assertions.assertEquals( 1, children.size());
     }
 }

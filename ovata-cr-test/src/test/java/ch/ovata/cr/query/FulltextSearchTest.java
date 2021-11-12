@@ -20,18 +20,15 @@ import ch.ovata.cr.api.Session;
 import ch.ovata.cr.api.query.FulltextQuery;
 import ch.ovata.cr.impl.AbstractOvataRepositoryTest;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires Postgresql and Elasticsearch.")
-@RunWith( SmokeRunner.class)
+@Tag( "integration-test")
 public class FulltextSearchTest extends AbstractOvataRepositoryTest {
 
     @Test
@@ -55,7 +52,7 @@ public class FulltextSearchTest extends AbstractOvataRepositoryTest {
         
         List<Node> result = q.term( "supersonic").execute();
         
-        Assert.assertEquals( 1, result.size());
-        Assert.assertEquals( "timon", result.get( 0).getName());
+        Assertions.assertEquals( 1, result.size());
+        Assertions.assertEquals( "timon", result.get( 0).getName());
     }
 }

@@ -24,25 +24,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.experimental.theories.DataPoint;
-import org.junit.experimental.theories.Theories;
-import org.junit.experimental.theories.Theory;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 
 /**
  *
  * @author dani
  */
 // TODO Fix Test and remove Ignore-Annotation
-@Ignore
-@RunWith( Theories.class)
+@Disabled
 public class BlobStoreTest {
 
-    @DataPoint
     public static BlobStore fsblobstore = new FSBlobStoreFactory( new File( "target")).createBlobStore( "sample-repository");
     
     public static BasicDataSource ds;
@@ -60,7 +54,6 @@ public class BlobStoreTest {
 //    @DataPoint
 //    public static BlobStore mysqlblobstore = new MySqlBlobStoreFactory( ds).createBlobStore( "test");
     
-    @DataPoint
     public static BlobStore s3blobstore = new S3BlobStoreFactory( Regions.EU_WEST_1, "ovata-cr-bucket-dev").createBlobStore( "sample-repository");
     
     private byte[] data = new byte[64];
@@ -68,39 +61,38 @@ public class BlobStoreTest {
     public BlobStoreTest() {
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         for( int i = 0; i < 64; i++) {
             data[i] = (byte)i;
         }
     }
     
-    @After
+    @AfterEach
     public void tearDown() {
     }
     
-    @Theory
     public void testMetaData( BlobStore store) {
         Binary binary = store.createBlob( new byte[] {}, "sample.txt", "text/plain");
 
-        Assert.assertEquals( 0, binary.getLength());
-        Assert.assertEquals( "sample.txt", binary.getFilename());
-        Assert.assertEquals( "text/plain", binary.getContentType());
+        Assertions.assertEquals( 0, binary.getLength());
+        Assertions.assertEquals( "sample.txt", binary.getFilename());
+        Assertions.assertEquals( "text/plain", binary.getContentType());
     }
 
-    @Theory
+//    @Theory
     public void testRetrieval( BlobStore store) {
         Binary binary = store.createBlob( data, "sample.txt", "application/octet-stream");
         String id = binary.getId();
         
         Binary binary2 = store.findBlob( id);
         
-        Assert.assertEquals( 64, binary2.getLength());
-        Assert.assertEquals( "sample.txt", binary2.getFilename());
-        Assert.assertEquals( "application/octet-stream", binary2.getContentType());
+        Assertions.assertEquals( 64, binary2.getLength());
+        Assertions.assertEquals( "sample.txt", binary2.getFilename());
+        Assertions.assertEquals( "application/octet-stream", binary2.getContentType());
     }
     
-    @Theory
+//    @Theory
     public void testRemoval( BlobStore store) {
         Binary binary = store.createBlob( data, "sample.txt", "application/octet-stream");
         String id = binary.getId();
@@ -112,14 +104,14 @@ public class BlobStoreTest {
             
             binary2.getFilename();
             
-            Assert.assertFalse( true);
+            Assertions.assertFalse( true);
         }
         catch( RepositoryException e) {
             // expected
         }
     }
     
-    @Theory
+//    @Theory
     public void testInputStream( BlobStore store) throws IOException {
         Binary binary = store.createBlob( data, "sample.txt", "application/octet-stream");
 
@@ -127,12 +119,12 @@ public class BlobStoreTest {
             for( int i = 0; i < 64; i++) {
                 int b = in.read();
                 
-                Assert.assertEquals( i, b);
+                Assertions.assertEquals( i, b);
             }
         }
     }
     
-    @Theory
+//    @Theory
     public void testLimitedInputStreamReadBytes( BlobStore store) throws IOException {
         Binary binary = store.createBlob( data, "sample.txt", "application/octet-stream");
 
@@ -140,14 +132,14 @@ public class BlobStoreTest {
             for( int i = 5; i <= 10; i++) {
                 int b = in.read();
                 
-                Assert.assertEquals( i, b);
+                Assertions.assertEquals( i, b);
             }
         
-            Assert.assertEquals( -1, in.read());
+            Assertions.assertEquals( -1, in.read());
         }
     }
     
-    @Theory
+//    @Theory
     public void testLimitedInputStreamReadByteArray( BlobStore store) throws IOException {
         Binary binary = store.createBlob( data, "sample.txt", "application/octet-stream");
         byte[] data = new byte[6];
@@ -155,8 +147,8 @@ public class BlobStoreTest {
         try( InputStream in = binary.getInputStream( 5, 10l)) {
             int len = in.read( data);
             
-            Assert.assertEquals( 6, len);
-            Assert.assertEquals( -1, in.read());
+            Assertions.assertEquals( 6, len);
+            Assertions.assertEquals( -1, in.read());
         }
     }
 }

@@ -27,18 +27,15 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import javax.security.auth.login.LoginException;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires MongoDb and S3.")
-@RunWith( SmokeRunner.class)
+@Tag( "integration-test")
 public class AccessPolicyTest extends AbstractOvataRepositoryTest {
     
     public static class SimpleAcl implements Acl {
@@ -92,7 +89,7 @@ public class AccessPolicyTest extends AbstractOvataRepositoryTest {
         try {
             dam = testSession.getNodeByPath( "/assets");
             
-            Assert.assertTrue( false);
+            Assertions.assertTrue( false);
         }
         catch( NotFoundException e) {
             // Expected
@@ -101,7 +98,7 @@ public class AccessPolicyTest extends AbstractOvataRepositoryTest {
         try {
             dam = testSession.getNodeByIdentifier( nodeId);
             
-            Assert.assertTrue( false);
+            Assertions.assertTrue( false);
         }
         catch( NotFoundException e) {
             // Expected
@@ -109,7 +106,7 @@ public class AccessPolicyTest extends AbstractOvataRepositoryTest {
         
         Collection<? extends Node> nodes = testSession.getRoot().getNodes();
         
-        Assert.assertEquals( 1, nodes.size());
+        Assertions.assertEquals( 1, nodes.size());
         
         Repository repository2 = connection.login( TEST_REPO_NAME, TEST_DATABASE_USERNAME, TEST_DATABASE_PASSWORD.toCharArray());
         
@@ -119,6 +116,6 @@ public class AccessPolicyTest extends AbstractOvataRepositoryTest {
         
         nodes = session.getRoot().getNodes();
         
-        Assert.assertEquals( 2, nodes.size());
+        Assertions.assertEquals( 2, nodes.size());
     }
 }

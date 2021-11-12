@@ -24,8 +24,8 @@ import ch.ovata.cr.spi.store.StoreDocumentList;
 import java.util.Arrays;
 import java.util.UUID;
 import javax.security.auth.Subject;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,14 +47,14 @@ public class AclTest {
         
         NodeImpl node = new NodeImpl( session, createNodeDocument(), true);
         
-        Assert.assertEquals( Policy.Result.GRANTED, node.getPolicy().check( Permission.READ));
-        Assert.assertEquals( Policy.Result.INDETERMINATE, node.getPolicy().check( Permission.WRITE));
-        Assert.assertEquals( Policy.Result.DENIED, node.getPolicy().check( Permission.ADD));
+        Assertions.assertEquals( Policy.Result.GRANTED, node.getPolicy().check( Permission.READ));
+        Assertions.assertEquals( Policy.Result.INDETERMINATE, node.getPolicy().check( Permission.WRITE));
+        Assertions.assertEquals( Policy.Result.DENIED, node.getPolicy().check( Permission.ADD));
         
         when( repository.getSubject()).thenReturn( testUser);
         NodeImpl node2 = new NodeImpl( session, createNodeDocument(), true);
         
-        Assert.assertEquals( Policy.Result.INDETERMINATE, node2.getPolicy().check( Permission.READ));
+        Assertions.assertEquals( Policy.Result.INDETERMINATE, node2.getPolicy().check( Permission.READ));
     }
     
     private Subject createUser() {

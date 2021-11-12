@@ -26,10 +26,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.security.auth.login.LoginException;
 import javax.sql.DataSource;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  *
@@ -44,11 +44,11 @@ public abstract class AbstractOvataRepositoryTest {
 
     private RepositoryConnectionDataSource ds = null;
 
-    @BeforeClass
+    @BeforeAll
     public static void setupClass() {
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() {
     }
 
@@ -65,7 +65,7 @@ public abstract class AbstractOvataRepositoryTest {
         return connection.login( TEST_REPO_NAME, TEST_DATABASE_USERNAME, TEST_DATABASE_PASSWORD.toCharArray());
     }
     
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         try {
             System.setProperty( "org.slf4j.simpleLogger.defaultLogLevel", "info");
@@ -111,6 +111,15 @@ public abstract class AbstractOvataRepositoryTest {
             e.printStackTrace();
         }
     }
+
+    @AfterEach
+    public void tearDown() throws Exception {
+        // Wait for asynchronous actions to terminate
+        Thread.sleep( 5000l);
+
+        this.connection.shutdown();
+        ds.close();
+    }
     
     private void dropDatabase( Connection c, String name) throws SQLException {
         try( Statement stmt = c.createStatement()) {
@@ -141,14 +150,5 @@ public abstract class AbstractOvataRepositoryTest {
         catch( IOException e) {
             throw new RepositoryException( "Could not initialize workspace <" + session.getWorkspace().getName() + ">.", e);
         }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        // Wait for asynchronous actions to terminate
-        Thread.sleep( 5000l);
-
-        this.connection.shutdown();
-        ds.close();
     }
 }

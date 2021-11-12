@@ -22,18 +22,15 @@ import ch.ovata.cr.api.Value;
 import ch.ovata.cr.api.query.FulltextQuery;
 import java.io.FileInputStream;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires MongoDb and S3.")
-@RunWith( SmokeRunner.class)
+@Tag( "integration-test")
 public class BinaryTest extends AbstractOvataRepositoryTest {
     
     @Test
@@ -57,8 +54,8 @@ public class BinaryTest extends AbstractOvataRepositoryTest {
         
         Binary value = dam.getProperty( "asset").getValue().getBinary();
         
-        Assert.assertEquals(  "sample.pdf", value.getFilename());
-        Assert.assertEquals( "application/pdf", value.getContentType());
+        Assertions.assertEquals(  "sample.pdf", value.getFilename());
+        Assertions.assertEquals( "application/pdf", value.getContentType());
         
         Thread.sleep( 2000l);
         
@@ -68,6 +65,6 @@ public class BinaryTest extends AbstractOvataRepositoryTest {
         
         List<Node> result = q.execute();
         
-        Assert.assertEquals( 1, result.size());
+        Assertions.assertEquals( 1, result.size());
     }
 }

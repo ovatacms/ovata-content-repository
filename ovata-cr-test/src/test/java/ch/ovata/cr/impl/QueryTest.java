@@ -21,18 +21,15 @@ import ch.ovata.cr.api.query.FulltextQuery;
 import ch.ovata.cr.api.query.QueryByExample;
 import ch.ovata.cr.spi.store.StoreDocument;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires MongoDb and S3.")
-@RunWith( SmokeRunner.class)
+@Tag( "integration-test")
 public class QueryTest extends AbstractOvataRepositoryTest {
     
     @Test
@@ -58,8 +55,8 @@ public class QueryTest extends AbstractOvataRepositoryTest {
         
         List<Node> result = q.term( "supersonic").execute();
         
-        Assert.assertEquals( 1, result.size());
-        Assert.assertEquals( "timon", result.get( 0).getName());
+        Assertions.assertEquals( 1, result.size());
+        Assertions.assertEquals( "timon", result.get( 0).getName());
         
         QueryByExample q2 = session.createQuery( QueryByExample.class);
         
@@ -69,8 +66,8 @@ public class QueryTest extends AbstractOvataRepositoryTest {
         
         List<Node> result2 = q2.document( doc).execute();
         
-        Assert.assertEquals( 1, result2.size());
-        Assert.assertEquals( "jonas", result2.get( 0).getName());
+        Assertions.assertEquals( 1, result2.size());
+        Assertions.assertEquals( "jonas", result2.get( 0).getName());
         
         
         session = repository.getSession( "test");
@@ -81,7 +78,7 @@ public class QueryTest extends AbstractOvataRepositoryTest {
         FulltextQuery q3 = session.createQuery( FulltextQuery.class);
         List<Node> result3 = q3.term( "supersonic").execute();
         
-        Assert.assertEquals( 0, result3.size());
+        Assertions.assertEquals( 0, result3.size());
         
         session.getWorkspace().vacuum( session.getRepository(), session.getRevision());
     }

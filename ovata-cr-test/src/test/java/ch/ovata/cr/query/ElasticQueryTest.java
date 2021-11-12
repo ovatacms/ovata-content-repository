@@ -22,20 +22,17 @@ import ch.ovata.cr.api.query.QueryByExample;
 import ch.ovata.cr.impl.AbstractOvataRepositoryTest;
 import ch.ovata.cr.spi.store.StoreDocument;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires Postgresql and Elasticsearch.")
-@RunWith( SmokeRunner.class)
-@Ignore
+@Tag( "integration-test")
+@Disabled
 public class ElasticQueryTest extends AbstractOvataRepositoryTest {
 
     @Test
@@ -61,8 +58,8 @@ public class ElasticQueryTest extends AbstractOvataRepositoryTest {
         
         List<Node> result = q.term( "supersonic").execute();
         
-        Assert.assertEquals( 1, result.size());
-        Assert.assertEquals( "timon", result.get( 0).getName());
+        Assertions.assertEquals( 1, result.size());
+        Assertions.assertEquals( "timon", result.get( 0).getName());
         
         QueryByExample q2 = session.createQuery( QueryByExample.class);
         
@@ -72,7 +69,7 @@ public class ElasticQueryTest extends AbstractOvataRepositoryTest {
         
         List<Node> result2 = q2.document( doc).childOf( "/users/dani").types( CoreNodeTypes.UNSTRUCTURED).execute();
         
-        Assert.assertEquals( 1, result2.size());
-        Assert.assertEquals( "jonas", result2.get( 0).getName());
+        Assertions.assertEquals( 1, result2.size());
+        Assertions.assertEquals( "jonas", result2.get( 0).getName());
     }
 }

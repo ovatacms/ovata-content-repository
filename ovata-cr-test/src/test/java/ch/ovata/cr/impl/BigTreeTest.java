@@ -22,18 +22,15 @@ import ch.ovata.cr.spi.store.Transaction;
 import ch.ovata.cr.store.mongodb.MongoDbTransaction;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires MongoDb and S3.")
-@RunWith( SmokeRunner.class)
+@Tag( "integration-test")
 public class BigTreeTest extends AbstractOvataRepositoryTest {
     
     @Test
@@ -69,7 +66,7 @@ public class BigTreeTest extends AbstractOvataRepositoryTest {
     }
     
     @Test
-    @Ignore
+    @Disabled
     public void testDeepBigTree() throws Exception {
         Repository repository = this.getRepositoryAsAdministrator();
         Session session = repository.getSession( "test");

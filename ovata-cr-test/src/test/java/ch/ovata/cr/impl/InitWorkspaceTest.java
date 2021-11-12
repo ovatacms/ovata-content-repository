@@ -16,24 +16,21 @@ package ch.ovata.cr.impl;
 import ch.ovata.cr.api.Repository;
 import ch.ovata.cr.api.Session;
 import ch.ovata.cr.api.Workspace;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires MongoDb and S3.")
-@RunWith( SmokeRunner.class)
+@Tag( "integration-test")
 public class InitWorkspaceTest extends AbstractOvataRepositoryTest {
     @Test
     public void testInitWorkspace() throws Exception {
         Repository repository = this.getRepositoryAsAdministrator();
         Session session = repository.getSession( Workspace.WORKSPACE_CONFIGURATION);
         
-        Assert.assertNotNull( session.getNodeByPath( "/security/jaas"));
+        Assertions.assertNotNull( session.getNodeByPath( "/security/jaas"));
     }
 }

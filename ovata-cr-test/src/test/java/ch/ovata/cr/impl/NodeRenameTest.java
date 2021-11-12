@@ -21,18 +21,15 @@ import ch.ovata.cr.api.SameNameSiblingException;
 import ch.ovata.cr.api.Session;
 import java.util.Collection;
 import java.util.Optional;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires MongoDb and S3.")
-@RunWith( SmokeRunner.class)
+@Tag( "integration-test")
 public class NodeRenameTest extends AbstractOvataRepositoryTest {
 
     @Test
@@ -63,11 +60,11 @@ public class NodeRenameTest extends AbstractOvataRepositoryTest {
         
         Optional<Node> n1 = session.findNodeByPath( "/users/roman");
         
-        Assert.assertFalse( n1.isPresent());
+        Assertions.assertFalse( n1.isPresent());
         
         Optional<Node> n2 = session.findNodeByPath( "/users/rhodan");
         
-        Assert.assertTrue( n2.isPresent());
+        Assertions.assertTrue( n2.isPresent());
         
         session.rollback();
     }
@@ -102,17 +99,17 @@ public class NodeRenameTest extends AbstractOvataRepositoryTest {
         
         Optional<Node> n1 = session.findNodeByPath( "/users/roman");
         
-        Assert.assertFalse( n1.isPresent());
+        Assertions.assertFalse( n1.isPresent());
         Optional<Node> n2 = session.findNodeByPath( "/users/rhodan");
         
-        Assert.assertTrue( n2.isPresent());
+        Assertions.assertTrue( n2.isPresent());
         
         session.rollback();
         
         Collection<Node> nodes = session.getRoot().getNode( "users").getNodes();
         
-        Assert.assertEquals( 0, nodes.stream().filter( n -> n.getName().equals( "roman")).count());
-        Assert.assertEquals( 1, nodes.stream().filter( n -> n.getName().equals( "rhodan")).count());
+        Assertions.assertEquals( 0, nodes.stream().filter( n -> n.getName().equals( "roman")).count());
+        Assertions.assertEquals( 1, nodes.stream().filter( n -> n.getName().equals( "rhodan")).count());
     }
     
     @Test
@@ -131,10 +128,10 @@ public class NodeRenameTest extends AbstractOvataRepositoryTest {
         
         Optional<Node> users4 = session.findNodeByPath( "/users");
 
-        Assert.assertFalse( users4.isPresent());
+        Assertions.assertFalse( users4.isPresent());
     }
     
-    @Test( expected = SameNameSiblingException.class)
+    @Test
     public void testSameNameSiblingConflict() throws Exception {
         Repository repository = this.getRepositoryAsAdministrator();
         Session session = repository.getSession( "test");
@@ -144,10 +141,10 @@ public class NodeRenameTest extends AbstractOvataRepositoryTest {
         Node user1 = users.addNode( "user1", CoreNodeTypes.UNSTRUCTURED);
         Node user2 = users.addNode( "user2", CoreNodeTypes.UNSTRUCTURED);
         
-        Node user3 = users.addNode( "user1", CoreNodeTypes.UNSTRUCTURED);
+        Assertions.assertThrows( SameNameSiblingException.class, () -> users.addNode( "user1", CoreNodeTypes.UNSTRUCTURED));
     }
     
-    @Test( expected = SameNameSiblingException.class) 
+    @Test
     public void testSameNameSiblingConflictRename() throws Exception {
         Repository repository = this.getRepositoryAsAdministrator();
         Session session = repository.getSession( "test");
@@ -157,40 +154,40 @@ public class NodeRenameTest extends AbstractOvataRepositoryTest {
         Node user1 = users.addNode( "user1", CoreNodeTypes.UNSTRUCTURED);
         Node user2 = users.addNode( "user2", CoreNodeTypes.UNSTRUCTURED);
 
-        user2.rename( "user1");
+        Assertions.assertThrows( SameNameSiblingException.class, () -> user2.rename( "user1"));
     }
     
-    @Test( expected = IllegalNameException.class)
+    @Test
     public void testAddNodeBlankName() throws Exception {
         Repository repository = this.getRepositoryAsAdministrator();
         Session session = repository.getSession( "test");
 
         Node node = session.getRoot();
         
-        node.addNode( "  ", CoreNodeTypes.UNSTRUCTURED);
+        Assertions.assertThrows( IllegalNameException.class, () -> node.addNode( "  ", CoreNodeTypes.UNSTRUCTURED));
     }
     
-    @Test( expected = IllegalNameException.class)
+    @Test
     public void testSetPropertyIllegalName() throws Exception {
         Repository repository = this.getRepositoryAsAdministrator();
         Session session = repository.getSession( "test");
 
         Node node = session.getRoot();
         
-        node.setProperty( "öüää", session.getValueFactory().of( ""));
+        Assertions.assertThrows( IllegalNameException.class, () -> node.setProperty( "öüää", session.getValueFactory().of( "")));
     }
     
-    @Test( expected = IllegalNameException.class)
+    @Test
     public void testAddPropertyEmptyName() throws Exception {
         Repository repository = this.getRepositoryAsAdministrator();
         Session session = repository.getSession( "test");
 
         Node node = session.getRoot();
         
-        node.setProperty( "", session.getValueFactory().of( "Test"));
+        Assertions.assertThrows( IllegalNameException.class, () -> node.setProperty( "", session.getValueFactory().of( "Test")));
     }
     
-    @Test( expected = NullPointerException.class)
+    @Test
     public void testSetNullValue() throws Exception {
         Repository repository = this.getRepositoryAsAdministrator();
         Session session = repository.getSession( "test");
@@ -198,5 +195,7 @@ public class NodeRenameTest extends AbstractOvataRepositoryTest {
         Node node = session.getRoot();
         
         node.setProperty( "test", null);
+        
+        Assertions.assertFalse( node.hasProperty( "test"));
     }
 }

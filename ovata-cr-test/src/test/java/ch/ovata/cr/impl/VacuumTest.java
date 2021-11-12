@@ -19,18 +19,15 @@ import ch.ovata.cr.api.Repository;
 import ch.ovata.cr.api.Session;
 import ch.ovata.cr.spi.store.Transaction;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires MongoDb and S3.")
-@RunWith( SmokeRunner.class)
+@Tag( "integration-test")
 public class VacuumTest extends AbstractOvataRepositoryTest {
     
     @Test
@@ -59,7 +56,7 @@ public class VacuumTest extends AbstractOvataRepositoryTest {
         
         List<Transaction> trxs = session.getRepository().getTransactionMgr().getTransactions( "test", 0l);
         
-        Assert.assertEquals( 2, trxs.size());
+        Assertions.assertEquals( 2, trxs.size());
         
         long revision = session.getRevision();
         
@@ -69,11 +66,11 @@ public class VacuumTest extends AbstractOvataRepositoryTest {
         
         Node dani3 = session.getNodeByPath( "/users/dani");
         
-        Assert.assertNotNull( dani3);
-        Assert.assertEquals( "daniel.hasler@bluesky-it.ch", dani3.getString( "mail"));
+        Assertions.assertNotNull( dani3);
+        Assertions.assertEquals( "daniel.hasler@bluesky-it.ch", dani3.getString( "mail"));
         
         trxs = session.getRepository().getTransactionMgr().getTransactions( "test", 0l);
         
-        Assert.assertEquals( 1, trxs.size());
+        Assertions.assertEquals( 1, trxs.size());
     }
 }

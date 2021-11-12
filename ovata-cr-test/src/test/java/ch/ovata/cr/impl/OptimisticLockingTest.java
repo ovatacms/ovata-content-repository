@@ -18,18 +18,15 @@ import ch.ovata.cr.api.Node;
 import ch.ovata.cr.api.OptimisticLockingException;
 import ch.ovata.cr.api.Repository;
 import ch.ovata.cr.api.Session;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires MongoDb and S3.")
-@RunWith( SmokeRunner.class)
+@Tag( "integration-test")
 public class OptimisticLockingTest extends AbstractOvataRepositoryTest {
     
     @Test
@@ -58,7 +55,7 @@ public class OptimisticLockingTest extends AbstractOvataRepositoryTest {
         try {
             session2.commit();
             
-            Assert.assertTrue( false);
+            Assertions.assertTrue( false);
         }
         catch( OptimisticLockingException e) {
             // Expected conflict on parent node
@@ -91,7 +88,7 @@ public class OptimisticLockingTest extends AbstractOvataRepositoryTest {
         try {
             session2.commit();
             
-            Assert.assertTrue( false);
+            Assertions.assertTrue( false);
         }
         catch( OptimisticLockingException e) {
             // Expected conflict on parent node

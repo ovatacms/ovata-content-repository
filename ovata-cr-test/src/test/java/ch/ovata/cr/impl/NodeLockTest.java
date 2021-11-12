@@ -20,18 +20,15 @@ import ch.ovata.cr.api.NodeLockedException;
 import ch.ovata.cr.api.Repository;
 import ch.ovata.cr.api.Session;
 import java.util.Optional;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires MongoDb and S3.")
-@RunWith( SmokeRunner.class)
+@Tag( "integration-test")
 public class NodeLockTest extends AbstractOvataRepositoryTest {
     
     @Test
@@ -44,23 +41,23 @@ public class NodeLockTest extends AbstractOvataRepositoryTest {
         Node roles = node.addNode( "roles", CoreNodeTypes.UNSTRUCTURED);
         Node dani = users.addNode( "dani", CoreNodeTypes.UNSTRUCTURED);
         
-        Assert.assertFalse( dani.isLocked());
+        Assertions.assertFalse( dani.isLocked());
         
         dani.lock();
         
-        Assert.assertTrue( dani.isLocked());
+        Assertions.assertTrue( dani.isLocked());
         
         Optional<LockInfo> info = dani.getLockInfo();
         
-        Assert.assertTrue( info.isPresent());
-        Assert.assertEquals( TEST_DATABASE_USERNAME, info.get().getPrincipal().getName());
-        Assert.assertEquals( TEST_REPO_NAME, info.get().getRepositoryName());
-        Assert.assertEquals( TEST_WORKSPACE_NAME, info.get().getWorkspaceName());
-        Assert.assertEquals( dani.getId(), info.get().getNodeId());
+        Assertions.assertTrue( info.isPresent());
+        Assertions.assertEquals( TEST_DATABASE_USERNAME, info.get().getPrincipal().getName());
+        Assertions.assertEquals( TEST_REPO_NAME, info.get().getRepositoryName());
+        Assertions.assertEquals( TEST_WORKSPACE_NAME, info.get().getWorkspaceName());
+        Assertions.assertEquals( dani.getId(), info.get().getNodeId());
         
         session.rollback();
         
-        Assert.assertFalse( dani.isLocked());
+        Assertions.assertFalse( dani.isLocked());
     }
     
     @Test
@@ -75,7 +72,7 @@ public class NodeLockTest extends AbstractOvataRepositoryTest {
         
         dani.lock();
         
-        Assert.assertTrue( dani.isLocked());
+        Assertions.assertTrue( dani.isLocked());
         
         session.commit();
         
@@ -83,7 +80,7 @@ public class NodeLockTest extends AbstractOvataRepositoryTest {
         
         dani = session.getNodeByPath( "/users/dani");
         
-        Assert.assertFalse( dani.isLocked());
+        Assertions.assertFalse( dani.isLocked());
     }
     
     @Test
@@ -106,19 +103,19 @@ public class NodeLockTest extends AbstractOvataRepositoryTest {
         Node dani1 = session.getNodeByPath( "/users/dani");
         Node dani2 = session2.getNodeByPath( "/users/dani");
         
-        Assert.assertFalse( dani1.isLocked());
-        Assert.assertFalse( dani2.isLocked());
+        Assertions.assertFalse( dani1.isLocked());
+        Assertions.assertFalse( dani2.isLocked());
         
         dani1.lock();
         
         dani1.lock();
         
-        Assert.assertTrue( dani1.isLocked());
+        Assertions.assertTrue( dani1.isLocked());
         
         try {
             dani2.lock();
             
-            Assert.assertTrue( false);
+            Assertions.assertTrue( false);
         }
         catch( NodeLockedException e) {
             System.out.println( "Could not lock a second time : " + e.getMessage());

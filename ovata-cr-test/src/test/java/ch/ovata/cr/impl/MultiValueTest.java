@@ -22,18 +22,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import patterntesting.runtime.annotation.IntegrationTest;
-import patterntesting.runtime.junit.SmokeRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-@IntegrationTest( "Requires MongoDb and S3.")
-@RunWith( SmokeRunner.class)
+@Tag( "integration-test")
 public class MultiValueTest extends AbstractOvataRepositoryTest {
     
     @Test
@@ -59,13 +56,13 @@ public class MultiValueTest extends AbstractOvataRepositoryTest {
         Node node2 = session.getNodeByPath( "/users/dani");
         Value[] values2 = node2.getProperty( "values").getValue().getArray();
         
-        Assert.assertEquals( Value.Type.ARRAY, node2.getProperty( "values").getValue().getType());
-        Assert.assertEquals( 5, values2.length);
+        Assertions.assertEquals( Value.Type.ARRAY, node2.getProperty( "values").getValue().getType());
+        Assertions.assertEquals( 5, values2.length);
         
         int index = 1;
         
         for( Value v : values2) {
-            Assert.assertEquals( Integer.toString( index++), v.getString());
+            Assertions.assertEquals( Integer.toString( index++), v.getString());
         }
     }
     
@@ -92,13 +89,13 @@ public class MultiValueTest extends AbstractOvataRepositoryTest {
         Node node2 = session.getNodeByPath( "/users/dani");
         Map<String, Value> values2 = node2.getProperty( "values").getValue().getMap();
         
-        Assert.assertEquals( Value.Type.MAP, node2.getProperty( "values").getValue().getType());
-        Assert.assertEquals( 5, values2.size());
+        Assertions.assertEquals( Value.Type.MAP, node2.getProperty( "values").getValue().getType());
+        Assertions.assertEquals( 5, values2.size());
         
-        Assert.assertEquals( "1", values2.get( "1").getString());
-        Assert.assertEquals( "2", values2.get( "2").getString());
-        Assert.assertEquals( "3", values2.get( "3").getString());
-        Assert.assertEquals( "4", values2.get( "4").getString());
-        Assert.assertEquals( "5", values2.get( "5").getString());
+        Assertions.assertEquals( "1", values2.get( "1").getString());
+        Assertions.assertEquals( "2", values2.get( "2").getString());
+        Assertions.assertEquals( "3", values2.get( "3").getString());
+        Assertions.assertEquals( "4", values2.get( "4").getString());
+        Assertions.assertEquals( "5", values2.get( "5").getString());
     }
 }

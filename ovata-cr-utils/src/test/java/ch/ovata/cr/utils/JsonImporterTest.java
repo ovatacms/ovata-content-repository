@@ -21,8 +21,8 @@ import ch.ovata.cr.api.Value;
 import ch.ovata.cr.api.ValueFactory;
 import java.io.FileInputStream;
 import java.io.IOException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mockito;
 import static org.mockito.Mockito.when;
@@ -53,7 +53,7 @@ public class JsonImporterTest {
             importer.importStream( in, node);
         }
         catch( Throwable t) {
-            Assert.assertTrue( false);
+            Assertions.assertTrue( false);
         }
     }
 }
