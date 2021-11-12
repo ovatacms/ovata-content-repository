@@ -1,0 +1,26 @@
+version: '3'
+services:
+  database:
+    image: "postgres" # use latest official postgres version
+    ports:
+      - "5432:5432" 
+    env_file:
+      - database.env # configure postgres
+    volumes:
+      - database-data:/var/lib/postgresql/data/ # persist data even if container shuts down
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
+    ports:
+      - "9200:9200"
+    env_file:
+      - elasticsearch.env
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.15.1
+    env_file:
+      - kibana.env
+    ports:
+      - 5601:5601
+
+volumes:
+  database-data: # named volumes can be managed easier using docker-compose
+
