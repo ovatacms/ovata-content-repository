@@ -207,10 +207,10 @@ public interface Node extends Item {
     Property getProperty( String name);
     
     /**
-     * Sets a property. If the value is null, the property is removed.
+     * Sets a property. If the value is null, the property is removed. If the property did not exist before, the property is created.
      * @param name the name of the property
      * @param value the value of the property
-     * @return the new property
+     * @return the new property or null if the property is not existing or was removed
      */
     Property setProperty( String name, Value value);
     

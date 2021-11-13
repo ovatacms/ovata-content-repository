@@ -289,18 +289,25 @@ public class NodeImpl implements Node {
         this.checkPermission( Permission.WRITE);
         
         if( value == null) {
-            throw new NullPointerException( "Value may not be null.");
+            PropertyImpl p = this.properties.get( name);
+            
+            if( p != null) {
+                removeProperty( p);
+            }
+            
+            return null;
         }
-        
-        copyOnWrite();
-        
-        PropertyImpl p = this.properties.computeIfAbsent( name, k -> new PropertyImpl( this, k));
-        
-        this.document.append( name, ((AbstractValue)value).toDocument());
-        
-        markDirty();
-        
-        return p;
+        else {
+            copyOnWrite();
+
+            PropertyImpl p = this.properties.computeIfAbsent( name, k -> new PropertyImpl( this, k));
+
+            this.document.append( name, ((AbstractValue)value).toDocument());
+
+            markDirty();
+
+            return p;
+        }
     }
     
     @Override

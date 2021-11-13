@@ -102,6 +102,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
                 <configuration>
                     <argLine>--add-opens=java.base/java.lang=ALL-UNNAMED
                         --add-opens=java.base/java.math=ALL-UNNAMED
@@ -110,6 +111,7 @@
                         --add-opens=java.base/java.net=ALL-UNNAMED
                         --add-opens=java.base/java.text=ALL-UNNAMED
                         --add-opens=java.sql/java.sql=ALL-UNNAMED</argLine>
+                    <groups>unit-test</groups>
                 </configuration>
             </plugin>
             <plugin>
@@ -122,4 +124,21 @@
             </plugin>
         </plugins>
     </build>
+    
+    <profiles>
+        <profile>
+            <id>integration-testing</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <groups>integration-test</groups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

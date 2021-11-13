@@ -23,7 +23,6 @@ import ch.ovata.cr.spi.store.StoreDocumentList;
 import ch.ovata.cr.bson.MongoDbDocument;
 import ch.ovata.cr.bson.MongoDbDocumentList;
 import ch.ovata.cr.spi.store.Transaction;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -159,7 +158,7 @@ public class PostgresqlCollection implements StoreCollection {
                                     "where p.node_id = j.node_id and p.revision = j.mrev and p.step = j.mstep", 
                                     getTableName(), getTableName(), getTableName());
         
-        logger.info( "findByParentId: {}.", sql);
+        logger.trace( "findByParentId: {}.", sql);
         
         try( Connection c = this.database.getDbConnection(); PreparedStatement stmt = c.prepareStatement( sql)) {
             stmt.setString( 1, parentId);

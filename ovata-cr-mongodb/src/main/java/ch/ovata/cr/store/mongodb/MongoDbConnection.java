@@ -42,7 +42,6 @@ public class MongoDbConnection implements StoreConnection {
         return "<not available>";
     }
 
-
     @Override
     public <T> T unwrap(Class<T> c) {
         if( MongoClient.class.equals( c)) {
