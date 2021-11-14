@@ -152,7 +152,7 @@ public class RepositoryImpl implements Repository {
     }
     
     private Collection<String> listAllWorkspaceNames() {
-        return this.database.listCollectionNames().filter( n -> !n.startsWith( "system_transactions") && !n.startsWith( "BLOBSTORE") && !n.startsWith( "fs.")).sorted( (n1, n2) -> n1.compareTo( n2)).collect( Collectors.toSet());
+        return this.database.listCollectionNames().filter( n -> !n.startsWith( "system_transactions") && !n.startsWith( "blobstore")).sorted( (n1, n2) -> n1.compareTo( n2)).collect( Collectors.toSet());
     }
     
     public BlobStore getBlobStore() {
