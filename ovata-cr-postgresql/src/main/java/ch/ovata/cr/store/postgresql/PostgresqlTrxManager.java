@@ -63,6 +63,9 @@ public class PostgresqlTrxManager extends AbstractTrxManager {
                     return 0l;
                 }
             }
+            finally {
+                c.rollback();
+            }
         }
         catch( SQLException e) {
             throw new RepositoryException( "Could not retrieve latest transaction.", e);
@@ -85,6 +88,9 @@ public class PostgresqlTrxManager extends AbstractTrxManager {
                 }
 
                 return trxs;
+            }
+            finally {
+                c.rollback();
             }
         }
         catch( SQLException e) {

@@ -51,11 +51,7 @@ public class PostgresqlBlobStore implements BlobStore {
     
     @SuppressWarnings( "all")
     Connection getConnection() throws SQLException {
-        Connection c = this.ds.getConnection();
-
-        c.setCatalog( databaseName);
-
-        return c;
+        return this.ds.getConnection();
     }
     
     private void createTable() {
@@ -97,6 +93,9 @@ public class PostgresqlBlobStore implements BlobStore {
                         throw new NotFoundException( "Could not retrieve blob <" + id + "> for database <" + this.databaseName + ">.");
                     }
                 }
+            }
+            finally {
+                c.rollback();
             }
         }
         catch( SQLException e) {
@@ -183,7 +182,7 @@ public class PostgresqlBlobStore implements BlobStore {
         }
     }
     
-    private String getTableName() {
+    String getTableName() {
         return this.databaseName + ".blobstore";
     }
 }

@@ -130,6 +130,9 @@ public class PostgresqlDatabase implements StoreDatabase {
                 
                 return names.stream();
             }
+            finally {
+                c.rollback();
+            }
         }
         catch( SQLException e) {
             throw new RepositoryException( "Could not retrieve list of collections.", e);

@@ -116,6 +116,9 @@ public class PostgresqlCollection implements StoreCollection {
                     return null;
                 }
             }
+            finally {
+                c.rollback();
+            }
         }
         catch( SQLException e) {
             throw new RepositoryException( "Could not retrieve node <" + nodeId + " / " + revision + ">.", e);
@@ -142,6 +145,9 @@ public class PostgresqlCollection implements StoreCollection {
                 else {
                     return null;
                 }
+            }
+            finally {
+                c.rollback();
             }
         }
         catch( SQLException e) {
@@ -175,6 +181,9 @@ public class PostgresqlCollection implements StoreCollection {
                 }
 
                 return new PostgresqlDocumentIterable( result);
+            }
+            finally {
+                c.rollback();
             }
         }
         catch( SQLException e) {

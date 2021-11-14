@@ -50,7 +50,7 @@ public class PostgresqlBlob implements Binary {
 
     @Override
     public InputStream getInputStream() {
-        String sql = "SELECT CONTENT FROM BLOBSTORE WHERE BLOB_ID = ?";
+        String sql = "SELECT CONTENT FROM " + this.store.getTableName() + " WHERE BLOB_ID = ?";
         
         try( Connection c = this.store.getConnection()) {
             try( PreparedStatement stmt = c.prepareStatement( sql)) {
@@ -65,7 +65,9 @@ public class PostgresqlBlob implements Binary {
                     }
                 }
             }
-            
+            finally {
+                c.rollback();
+            }
         }
         catch( SQLException e) {
             throw new RepositoryException( "Could not read BLOB <"  + this.id + ">.", e);

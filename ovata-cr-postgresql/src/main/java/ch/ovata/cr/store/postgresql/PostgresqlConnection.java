@@ -90,6 +90,9 @@ public class PostgresqlConnection implements StoreConnection {
                 try( ResultSet r = stmt.executeQuery()) {
                     return r.next();
                 }
+                finally {
+                    c.rollback();
+                }
             }
         } 
         catch (SQLException e) {
