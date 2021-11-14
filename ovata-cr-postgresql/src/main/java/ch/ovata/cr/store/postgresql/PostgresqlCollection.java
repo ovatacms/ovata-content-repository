@@ -151,11 +151,12 @@ public class PostgresqlCollection implements StoreCollection {
 
     @Override
     public StoreDocumentIterable findByParentId(String parentId, long revision) {
-        String sql = String.format( "SELECT p.PAYLOAD from %s p, " +
-                                    "(SELECT t.NODE_ID, i.MREV, MAX(t.STEP) as MSTEP FROM %s t, " +
-                                    "(SELECT NODE_ID, MAX(REVISION) as MREV FROM %s WHERE (PARENT_ID = ?) AND (REVISION <= ?) GROUP BY NODE_ID) i " +
-                                    "where t.NODE_ID = i.NODE_ID and t.revision = i.MREV GROUP BY t.node_id, i.MREV) j " +
-                                    "where p.node_id = j.node_id and p.revision = j.mrev and p.step = j.mstep", 
+        String sql = String.format( "SELECT p.payload from %s p, " +
+                                    "(SELECT t.node_id, i.MREV, MAX(t.step) as mstep " +
+                                    "FROM %s t, " +
+                                    "(SELECT node_id, parent_id, MAX(revision) as mrev FROM %s WHERE (parent_id = ?) AND (REVISION <= ?) GROUP BY node_id, parent_id) i " +
+                                    "where t.node_id = i.node_id and t.revision = i.MREV and t.parent_id = i.parent_id GROUP BY t.node_id, t.parent_id, i.MREV) j " +
+                                    "where p.node_id = j.node_id and p.revision = j.mrev and p.step = j.mstep and NOT p.removed", 
                                     getTableName(), getTableName(), getTableName());
         
         logger.trace( "findByParentId: {}.", sql);
@@ -215,6 +216,6 @@ public class PostgresqlCollection implements StoreCollection {
     }
     
     private String getTableName() {
-        return this.database.getName() + "_" + this.name;
+        return this.database.getName() + "." + this.name;
     }
 }

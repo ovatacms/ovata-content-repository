@@ -69,7 +69,8 @@ public class PostgresqlDatabase implements StoreDatabase {
     }
     
     private void createCollection( String tableName) {
-        String fqtn = this.databaseName + "_" + tableName;
+        String fqtn = this.databaseName + "." + tableName;
+        String fqin = this.databaseName + "_" + tableName + "_idx1";
         String sql = SqlUtils.createStatement( "CREATE TABLE %s (" +
                     "NODE_ID CHAR( 36)," +
                     "REVISION BIGINT," +
@@ -81,7 +82,7 @@ public class PostgresqlDatabase implements StoreDatabase {
                     "PRIMARY KEY (NODE_ID, REVISION, STEP)" +
                 ")", fqtn);
         
-        String i1 = String.format( "CREATE INDEX %s ON %s (PARENT_ID, NAME, REVISION DESC, STEP DESC);", fqtn + "_idx1", fqtn);
+        String i1 = String.format( "CREATE INDEX %s ON %s (PARENT_ID, NAME, REVISION DESC, STEP DESC);", fqin, fqtn);
         
         try( Connection c = getDbConnection(); Statement stmt = c.createStatement()) {
             stmt.execute( sql);
@@ -98,7 +99,7 @@ public class PostgresqlDatabase implements StoreDatabase {
     public void dropCollection(String name) {
         try( Connection c = getDbConnection()) {
             try( Statement stmt = c.createStatement()) {
-                stmt.execute( SqlUtils.createStatement( "DROP TABLE %s", this.databaseName + "_" + name));
+                stmt.execute( SqlUtils.createStatement( "DROP TABLE %s", this.databaseName + "." + name));
             }
             
             c.commit();
@@ -115,15 +116,15 @@ public class PostgresqlDatabase implements StoreDatabase {
     @Override
     public Stream<String> listCollectionNames() {
         try( Connection c = getDbConnection()) {
-            try( ResultSet r = c.getMetaData().getTables( c.getCatalog(), c.getSchema(), "%", null)) {
+            try( ResultSet r = c.getMetaData().getTables( null, this.databaseName, "%", null)) {
                 ArrayList<String> names = new ArrayList();
                 
                 while( r.next()) {
                     String tableName = r.getString( 3);
                     String type = r.getString( 4);
 
-                    if( "TABLE".equals( type) && tableName.startsWith( this.databaseName + "_")) {
-                        names.add( tableName.substring( this.databaseName.length() + 1));
+                    if( "TABLE".equals( type)) {
+                        names.add( tableName);
                     }
                 }
                 

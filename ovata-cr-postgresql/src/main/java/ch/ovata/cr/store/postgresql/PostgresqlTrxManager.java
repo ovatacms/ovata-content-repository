@@ -216,6 +216,6 @@ public class PostgresqlTrxManager extends AbstractTrxManager {
     }
     
     private String getTrxTableName() {
-        return this.database.getName() + "_" + TRANSACTIONS_TABLE;
+        return this.database.getName() + "." + TRANSACTIONS_TABLE;
     }
 }

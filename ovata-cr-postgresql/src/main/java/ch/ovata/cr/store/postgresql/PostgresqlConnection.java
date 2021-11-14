@@ -18,6 +18,7 @@ import ch.ovata.cr.spi.store.StoreConnection;
 import ch.ovata.cr.spi.store.StoreDatabase;
 import ch.ovata.cr.spi.store.blob.BlobStoreFactory;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
@@ -64,23 +65,31 @@ public class PostgresqlConnection implements StoreConnection {
 
     @Override
     public StoreDatabase createDatabase(String name) {
+        if( !checkIfDatabaseExists( name)) {
+            try( Connection c = ds.getConnection()) {
+                try( PreparedStatement stmt = c.prepareStatement( "CREATE SCHEMA " + name)) {
+                    stmt.execute();
+                    
+                    c.commit();
+                }
+            }
+            catch( SQLException e) {
+                throw new RepositoryException( "Could not create database.", e);
+            }
+        }
+        
         return getDatabase( name);
     }
     
     @Override
     public boolean checkIfDatabaseExists(String name) {
         try (Connection c = ds.getConnection()) {
-            try (ResultSet r = c.getMetaData().getTables( c.getCatalog(), c.getSchema(), "%", null)) {
-
-                while (r.next()) {
-                    String tableName = r.getString(3);
-
-                    if ( tableName.startsWith( name)) {
-                        return true;
-                    }
+            try( PreparedStatement stmt = c.prepareStatement( "SELECT schema_name FROM information_schema.schemata WHERE schema_name = ?")) {
+                stmt.setString( 1, name);
+                
+                try( ResultSet r = stmt.executeQuery()) {
+                    return r.next();
                 }
-
-                return false;
             }
         } 
         catch (SQLException e) {

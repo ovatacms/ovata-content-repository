@@ -60,7 +60,7 @@ public class PostgresqlBlobStore implements BlobStore {
     
     private void createTable() {
         try( Connection c = this.getConnection()) {
-            String sql = "CREATE TABLE IF NOT EXISTS BLOBSTORE(" +
+            String sql = "CREATE TABLE IF NOT EXISTS " + getTableName() + " (" +
                             "BLOB_ID CHAR( 36)," +
                             "DB_NAME VARCHAR( 255)," +
                             "FILENAME VARCHAR( 512)," +
@@ -82,7 +82,7 @@ public class PostgresqlBlobStore implements BlobStore {
     
     @Override
     public Binary findBlob(String id) {
-        String sql = "SELECT FILENAME, CONTENT_TYPE, CONTENT_LENGTH FROM BLOBSTORE WHERE (DB_NAME = ?) AND (BLOB_ID = ?)";
+        String sql = "SELECT FILENAME, CONTENT_TYPE, CONTENT_LENGTH FROM " + getTableName() + " WHERE (DB_NAME = ?) AND (BLOB_ID = ?)";
         
         try( Connection c = this.getConnection()) {
             try( PreparedStatement stmt = c.prepareStatement( sql)) {
@@ -131,7 +131,7 @@ public class PostgresqlBlobStore implements BlobStore {
 
     @Override
     public Binary createBlob(InputStream in, long contentLength, String filename, String contentType) {
-        String sql = "INSERT INTO BLOBSTORE (BLOB_ID, DB_NAME, FILENAME, CONTENT_TYPE, CONTENT_LENGTH, CONTENT) VALUES (?,?,?,?,?,?)";
+        String sql = "INSERT INTO " + getTableName() + " (BLOB_ID, DB_NAME, FILENAME, CONTENT_TYPE, CONTENT_LENGTH, CONTENT) VALUES (?,?,?,?,?,?)";
         String id = UUID.randomUUID().toString();
         
         try( Connection c = this.getConnection()) {
@@ -162,7 +162,7 @@ public class PostgresqlBlobStore implements BlobStore {
 
     @Override
     public void deleteBlobs(Collection<String> ids) {
-        String sql = "DELETE FROM BLOBSTORE WHERE (DB_NAME = ?) AND (BLOB_ID = ?)";
+        String sql = "DELETE FROM " + getTableName() + " WHERE (DB_NAME = ?) AND (BLOB_ID = ?)";
         
         try( Connection c = this.getConnection()) {
             try( PreparedStatement stmt = c.prepareStatement( sql)) {
@@ -181,5 +181,9 @@ public class PostgresqlBlobStore implements BlobStore {
         catch( SQLException e) {
             throw new RepositoryException( "Could not delete blobs.", e);
         }
+    }
+    
+    private String getTableName() {
+        return this.databaseName + ".blobstore";
     }
 }

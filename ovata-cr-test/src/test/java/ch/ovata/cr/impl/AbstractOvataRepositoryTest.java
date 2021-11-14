@@ -93,13 +93,14 @@ public abstract class AbstractOvataRepositoryTest {
             if( ds != null) {
                 System.out.println( "-----> Dropping tables.");
                 try( Connection c = ds.getConnection()) {
-                    dropTable( c, "ovatadev_system_transactions");
-                    dropTable( c, "ovatadev_system_users");
-                    dropTable( c, "ovatadev_system_configuration");
-                    dropTable( c, "ovatadev_test");
-                    dropTable( c, "ovatadev_system_config_clone");
-                    dropTable( c, "ovatadev_other");
-                    dropTable( c, "blobstore");
+                    dropTable( c, "ovatadev.system_transactions");
+                    dropTable( c, "ovatadev.system_users");
+                    dropTable( c, "ovatadev.system_configuration");
+                    dropTable( c, "ovatadev.test");
+                    dropTable( c, "ovatadev.system_config_clone");
+                    dropTable( c, "ovatadev.other");
+                    dropTable( c, "ovatadev.blobstore");
+                    dropDatabase( c, "ovatadev");
                 }
             }
 
@@ -123,7 +124,8 @@ public abstract class AbstractOvataRepositoryTest {
     
     private void dropDatabase( Connection c, String name) throws SQLException {
         try( Statement stmt = c.createStatement()) {
-            stmt.execute( "DROP DATABASE IF EXISTS " + name + "");
+            stmt.execute( "DROP SCHEMA IF EXISTS " + name + "");
+            c.commit();
         }
     }
     
