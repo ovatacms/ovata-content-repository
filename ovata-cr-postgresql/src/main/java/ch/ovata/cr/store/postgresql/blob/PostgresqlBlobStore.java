@@ -11,7 +11,7 @@
  * it only in accordance with the terms of the license agreement
  * you entered into with Ovata GmbH.
  */
-package ch.ovata.cr.store.postgresql;
+package ch.ovata.cr.store.postgresql.blob;
 
 import ch.ovata.cr.api.Binary;
 import ch.ovata.cr.api.NotFoundException;

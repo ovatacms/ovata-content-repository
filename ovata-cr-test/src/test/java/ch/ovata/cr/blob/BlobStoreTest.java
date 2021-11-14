@@ -14,52 +14,33 @@
 package ch.ovata.cr.blob;
 
 import ch.ovata.cr.api.Binary;
-import ch.ovata.cr.api.RepositoryException;
+import ch.ovata.cr.api.NotFoundException;
 import ch.ovata.cr.spi.store.blob.BlobStore;
-import ch.ovata.cr.store.aws.S3BlobStoreFactory;
 import ch.ovata.cr.store.fs.FSBlobStoreFactory;
-import com.amazonaws.regions.Regions;
+import ch.ovata.cr.store.postgresql.blob.PostgresqlBlobStoreFactory;
+import ch.ovata.cr.store.postgresql.blob.PostgresqlLargeObjectStoreFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Arrays;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author dani
  */
-// TODO Fix Test and remove Ignore-Annotation
-@Disabled
+@Tag( "integration-test")
 public class BlobStoreTest {
 
-    public static BlobStore fsblobstore = new FSBlobStoreFactory( new File( "target")).createBlobStore( "sample-repository");
-    
-    public static BasicDataSource ds;
-    
-    static {
-        ds = new BasicDataSource();
-        
-        ds.setDriverClassName( "com.mysql.cj.jdbc.Driver");
-        ds.setUrl( "jdbc:mysql://192.168.5.25:3307/test");
-        ds.setUsername( "admin");
-        ds.setPassword( "superman");
-        ds.setInitialSize( 5);
-    }
-    
-//    @DataPoint
-//    public static BlobStore mysqlblobstore = new MySqlBlobStoreFactory( ds).createBlobStore( "test");
-    
-    public static BlobStore s3blobstore = new S3BlobStoreFactory( Regions.EU_WEST_1, "ovata-cr-bucket-dev").createBlobStore( "sample-repository");
-    
     private byte[] data = new byte[64];
-    
-    public BlobStoreTest() {
-    }
 
     @BeforeEach
     public void setUp() {
@@ -72,15 +53,92 @@ public class BlobStoreTest {
     public void tearDown() {
     }
     
-    public void testMetaData( BlobStore store) {
-        Binary binary = store.createBlob( new byte[] {}, "sample.txt", "text/plain");
+    @Test
+    public void testFilesystemBlobStore() throws Exception {
+        BlobStore fsblobstore = new FSBlobStoreFactory( new File( "target")).createBlobStore( "sample-repository");
+        
+        testMetaData( fsblobstore);
+        testRetrieval( fsblobstore);
+        testRemoval( fsblobstore);
+        testInputStream( fsblobstore);
+        testLimitedInputStreamReadBytes( fsblobstore);
+        testLimitedInputStreamReadByteArray( fsblobstore);
+    }
+    
+    @Test
+    public void testPostgresqlLargeObject() throws Exception {
+        BasicDataSource ds = new BasicDataSource();
+        
+        ds.setDriverClassName( "org.postgresql.Driver");
+        ds.setUrl( "jdbc:postgresql://localhost/ovata");
+        ds.setUsername( "postgres");
+        ds.setPassword( "postgres");
+        ds.setInitialSize( 5);
+        ds.setDefaultAutoCommit( false);
+        
+        dropBlobstore( ds);
+        
+        try {
+            BlobStore psqllobstore = new PostgresqlLargeObjectStoreFactory( ds).createBlobStore( "public");
+            
+            testMetaData( psqllobstore);
+            testRetrieval( psqllobstore);
+            testRemoval( psqllobstore);
+            testInputStream( psqllobstore);
+            testLimitedInputStreamReadBytes( psqllobstore);
+            testLimitedInputStreamReadByteArray( psqllobstore);
+        }
+        finally {
+            ds.close();
+        }
+    }
+    
+    @Test
+    public void testPostgresqlByteA() throws Exception {
+        BasicDataSource ds = new BasicDataSource();
+        
+        ds.setDriverClassName( "org.postgresql.Driver");
+        ds.setUrl( "jdbc:postgresql://localhost/ovata");
+        ds.setUsername( "postgres");
+        ds.setPassword( "postgres");
+        ds.setInitialSize( 5);
+        ds.setDefaultAutoCommit( false);
+        
+        dropBlobstore(ds);
+        
+        try {
+            BlobStore psqlbyteastore = new PostgresqlBlobStoreFactory( ds).createBlobStore( "public");
+            
+            testMetaData( psqlbyteastore);
+            testRetrieval( psqlbyteastore);
+            testRemoval( psqlbyteastore);
+            testInputStream( psqlbyteastore);
+            testLimitedInputStreamReadBytes( psqlbyteastore);
+            testLimitedInputStreamReadByteArray( psqlbyteastore);
+        }
+        finally {
+            ds.close();
+        }
+    }
 
-        Assertions.assertEquals( 0, binary.getLength());
+    private void dropBlobstore(BasicDataSource ds) throws SQLException {
+        try( Connection c = ds.getConnection()) {
+            try( PreparedStatement stmt = c.prepareStatement( "DROP TABLE public.blobstore")) {
+                stmt.execute();
+                
+                c.commit();
+            }
+        }
+    }
+    
+    public void testMetaData( BlobStore store) {
+        Binary binary = store.createBlob( data, "sample.txt", "text/plain");
+
+        Assertions.assertEquals( 64, binary.getLength());
         Assertions.assertEquals( "sample.txt", binary.getFilename());
         Assertions.assertEquals( "text/plain", binary.getContentType());
     }
 
-//    @Theory
     public void testRetrieval( BlobStore store) {
         Binary binary = store.createBlob( data, "sample.txt", "application/octet-stream");
         String id = binary.getId();
@@ -92,26 +150,15 @@ public class BlobStoreTest {
         Assertions.assertEquals( "application/octet-stream", binary2.getContentType());
     }
     
-//    @Theory
     public void testRemoval( BlobStore store) {
         Binary binary = store.createBlob( data, "sample.txt", "application/octet-stream");
         String id = binary.getId();
 
         store.deleteBlobs( Arrays.asList( id));
 
-        try {
-            Binary binary2 = store.findBlob( id);
-            
-            binary2.getFilename();
-            
-            Assertions.assertFalse( true);
-        }
-        catch( RepositoryException e) {
-            // expected
-        }
+        Assertions.assertThrows( NotFoundException.class, () -> store.findBlob( id));
     }
     
-//    @Theory
     public void testInputStream( BlobStore store) throws IOException {
         Binary binary = store.createBlob( data, "sample.txt", "application/octet-stream");
 
@@ -124,7 +171,6 @@ public class BlobStoreTest {
         }
     }
     
-//    @Theory
     public void testLimitedInputStreamReadBytes( BlobStore store) throws IOException {
         Binary binary = store.createBlob( data, "sample.txt", "application/octet-stream");
 
@@ -139,7 +185,6 @@ public class BlobStoreTest {
         }
     }
     
-//    @Theory
     public void testLimitedInputStreamReadByteArray( BlobStore store) throws IOException {
         Binary binary = store.createBlob( data, "sample.txt", "application/octet-stream");
         byte[] data = new byte[6];

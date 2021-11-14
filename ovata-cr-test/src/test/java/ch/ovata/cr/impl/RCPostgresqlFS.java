@@ -15,7 +15,7 @@ package ch.ovata.cr.impl;
 
 import ch.ovata.cr.api.RepositoryConnection;
 import ch.ovata.cr.api.RepositoryConnectionDataSource;
-import ch.ovata.cr.store.postgresql.PostgresqlBlobStoreFactory;
+import ch.ovata.cr.store.postgresql.blob.PostgresqlBlobStoreFactory;
 import ch.ovata.cr.store.postgresql.PostgresqlConnection;
 import ch.ovata.cr.store.postgresql.search.PostgresqlSearchProviderFactory;
 import org.apache.commons.dbcp2.BasicDataSource;
